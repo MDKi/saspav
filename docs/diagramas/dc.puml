@@ -1,0 +1,574 @@
+@startuml DiagramaClases
+
+!theme vibrant
+skinparam monochrome true
+
+' -----------------------------------------------------------------------------
+' | La idea de estas líneas es unir las notas con línea de trazos y mantener  |
+' | los circle spots, pero parece que no funciona como esperaba. Van a quedar |
+' | las notas con el conector raro nomás.                                     |
+' -----------------------------------------------------------------------------
+
+' skinparam style strictuml
+' show circle
+
+' -----------------------------------------------------------------------------
+' | La alternativa hubiera sido cambiar los spots por estereotipos, como por  |
+' | ejemplo, <<entity>>, <<enum>> y <<table>>.                                |
+' -----------------------------------------------------------------------------
+
+' -----------------------------------------------------------------------------
+' | Entidades                                                                 |
+' -----------------------------------------------------------------------------
+
+entity Usuario {
+  idUsuario: Int @id @default(autoincrement())
+' identificación: String @unique $identificación
+  legajo: String @unique
+  email: String @unique
+  nombre: String
+  apellido: String
+  teléfono: String?
+  hashSaltContraseña: String
+  vencimientoContraseña: Date
+  .. Relaciones ..
+  historialVigencia: HistorialVigenciaUsuario
+  tipoIdentificación: TipoIdentificación
+  asignacionesDeRol: HistoriaRolUsuario[]
+  horarios: Horario[]
+  asignacionesDeProfesión: HistoriaProfesión[]
+  .. Relaciones inversas ..
+  avancesCaso: AvanceCaso[]
+  casosCreados: Caso[]
+  casosAsignados: CasoAsignado[]
+  turnos: Turno[]
+  .. Claves foráneas ..
+}
+entity HistoriaVigenciaUsuario {
+  idHistoriaUsuario: Int @id @default(autoincrement())
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+  motivo: String
+  .. Relaciones ..
+  .. Relaciones inversas ..
+  usuario: Usuario
+  .. Claves foráneas ..
+  idUsuario
+}
+entity TipoIdentificación << Tipificador >> $identificación {
+  idTipoIdentificación
+  nombreIdentificación
+  .. Relaciones ..
+  .. Relaciones inversas ..
+  : Usuario[] // Explícitamente omitida
+  .. Claves foráneas ..
+}
+entity HistoriaEstadoTurno << Historiador >> {
+  idHistoriaEstadoTurno: Int @id @default(autoincrement())
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+  estadoTurno: EstadoTurno
+  motivoTurno: String?
+  .. Relaciones ..
+  caso: Caso?
+  .. Relaciones inversas ..
+  turno: Turno
+  .. Claves foráneas ..
+  idTurno
+  idCaso?
+}
+entity Turno {
+  idTurno: Int @id @default(autoincrement())
+  inicioTurno: DateTime
+  finTurno: DateTime
+  .. Relaciones ..
+  usuario: Usuario
+  estados: HistoriaEstadoTurno[]
+  .. Relaciones inversas ..
+  .. Claves foráneas ..
+  idUsuario
+}
+entity Horario {
+  idHorario: Int @id @default(autoincrement())
+  día: Día
+  horaInicio: Time
+  horaFin: Time
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+  .. Relaciones ..
+  usuario: Usuario
+  .. Relaciones inversas ..
+  .. Claves foráneas ..
+  idUsuario
+}
+entity CasoAsignado << Historiador >> {
+  idCasoAsignado: Int @id @default(autoincrement())
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+  .. Relaciones ..
+  usuarioAsignado: Usuario
+  .. Relaciones inversas ..
+  caso: Caso
+  .. Claves foráneas ..
+  idCaso
+  idUsuario
+}
+entity HistoriaRolUsuario << Historiador >> {
+  idHistoriaRolUsuario: Int @id @default(autoincrement())
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+  .. Relaciones ..
+  rol: Rol
+  .. Relaciones inversas ..
+  usuario: Usuario
+  .. Claves foráneas ..
+  idRol
+  idUsuario
+}
+entity HistoriaPermisoRol << Historiador >> {
+  idHistoriaPermisoRol: Int @id @default(autoincrement())
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+  permiso: Permiso
+  .. Relaciones ..
+  .. Relaciones inversas ..
+  rol: Rol
+  .. Claves foráneas ..
+  idRol
+}
+entity Caso {
+  idCaso: Int @id @default(autoincrement())
+  codCaso: Int @default(autoincrement)
+  nombre: String?
+  apellido: String?
+  dni: String?
+  fechaNacimiento: Date?
+  motivoIngreso: String?
+  ocupación: String?
+  fechaIngreso: Date
+  observaciones: String?
+  genograma: Image?
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+
+  .. Relaciones ..
+  creadoPor: Usuario
+  avances: AvanceCaso[]
+  asignacionesUsuario: CasoAsignado[]
+  recursosAsignados: AsignaciónRecurso[]
+  historialEstados: HistoriaEstadoCaso[]
+  convivientes: Conviviente[]
+  derechoVulnerado: DerechoVulnerado[]
+  .. Relaciones inversas ..
+  turnos: HistoriaEstadoTurno[]
+  .. Claves foráneas ..
+  idUsuario
+}
+entity Recurso {
+  idRecurso: Int @id @default(autoincrement())
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+  cantidad: Float
+  vencimiento: DateTime?
+  .. Relaciones ..
+  tipoRecurso: TipoRecurso
+  donación: Donación?
+  .. Relaciones inversas ..
+  asignadoA: AsignaciónRecurso[]
+  .. Claves foráneas ..
+  idTipoRecurso
+  idDonación
+}
+entity AsignaciónRecurso << Historiador >> {
+  idAsignaciónRecurso: Int @id @default(autoincrement())
+' TODO: PARAMETRIZAR
+  motivoAsignación: String?
+  inicioAsignación: DateTime
+  finAsignación: DateTime
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+  .. Relaciones ..
+  recurso: Recurso
+  .. Relaciones inversas ..
+  caso: Caso
+  .. Claves foráneas ..
+  idRecurso
+  idCaso
+}
+entity HistoriaProfesión << Historiador >> {
+  idHistoriaProfesión: Int @id @default(autoincrement())
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+  .. Relaciones ..
+  profesión: Profesión
+  .. Relaciones inversas ..
+  asignadaA: Usuario
+  .. Claves foráneas ..
+  idEspecialdad
+  idUsuario
+}
+entity HistoriaEstadoCaso << Historiador >> {
+  idHistoriaEstadoCaso: Int @id @default(autoincrement())
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+  .. Relaciones ..
+  estado: EstadoCaso
+  .. Relaciones inversas ..
+  caso: Caso
+  .. Claves foráneas ..
+  idCaso
+  idEstadoCaso
+}
+entity Donación {
+  idDonación: Int @id @default(autoincrement())
+  fechaDonación: DateTime
+  .. Relaciones ..
+  donantes: Donante[]
+  .. Relaciones inversas ..
+  recursoDonado: Recurso
+  .. Claves foráneas ..
+  idRecurso
+}
+
+entity AvanceCaso {
+  idAvanceCaso: Int @id @default(autoincrement())
+  fechaAvanceCaso: DateTime
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt  
+}
+entity Donante {
+  idDontante: Int @id @default(autoincrement())
+  nombre: String
+  apellido: String
+  .. Relaciones ..
+  .. Relaciones inversas ..
+  donaciones: Donación[]
+  .. Claves foráneas ..
+}
+entity Conviviente {
+  idConviviente: Int @id @default(autoincrement())
+  nombre: String
+  apellido: String
+  fechaNacimiento: Date?
+  teléfono: String?
+  email: String?
+  ocupación: String?
+  ingresos: Number?
+  observaciones: String?
+  .. Relaciones ..
+  vínculo: Vínculo
+  escolaridad: Escolaridad
+  .. Relaciones inversas ..
+  caso: Caso
+  .. Claves foráneas ..
+  idCaso
+  idVínculo
+  idEscolaridad
+}
+entity EstadoCaso << Tipificador >> {
+  idEstadoCaso: Int @id @default(autoincrement())
+  nombreEstadoCaso: String
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt  
+  .. Relaciones ..
+  .. Relaciones inversas ..
+  asignadoA: HistoriaEstadoCaso[]
+  .. Claves foráneas ..
+}
+entity Rol << Tipificador >> {
+  idRol: Int @id @default(autoincrement())
+  nombreRol: String
+  .. Relaciones ..
+  asignacionesDePermiso: HistoriaPermisoRol[]
+  .. Relaciones inversas ..
+  asignadoA: HistoriaRolUsuario[]
+  .. Claves foráneas ..
+}
+entity DerechoVulnerado << Tipificador >> {
+  idDerechoVulnerado: Int @id @default(autoincrement())
+  nombreDerechoVulnerado: String
+  .. Relaciones ..
+  .. Relaciones inversas ..
+  casos: Caso[]
+  .. Claves foráneas ..
+}
+entity Escolaridad << Tipificador >> {
+  idEscolaridad: Int @id @default(autoincrement())
+  nombreEscolaridad: String
+}
+entity Vínculo << Tipificador >> {
+  idVínculo: Int @id @default(autoincrement())
+  nombreVínculo: String
+  .. Relaciones ..
+  .. Relaciones inversas ..
+  : Conviviente[] // Explícitamente omitida
+  .. Claves foráneas ..
+}
+entity Profesión << Tipificador >> {
+  idProfesión: Int @id @default(autoincrement())
+  nombreProfesión: String
+  .. Relaciones ..
+  .. Relaciones inversas ..
+  asignadoA: HistoriaProfesión[]
+  .. Claves foráneas ..
+}
+entity TipoRecurso << Tipificador >> {
+  idTipoRecurso: Int @id @default(autoincrement())
+' esConsumible: Boolean
+' esExpirable: Boolean
+  nombreTipoRecurso: String
+  unidadMedida: UnidadMedida
+  .. Relaciones ..
+  .. Relaciones inversas ..
+  recursos: Recurso[]
+  .. Claves foráneas ..
+}
+
+' -----------------------------------------------------------------------------
+' | Enumeraciones                                                             |
+' -----------------------------------------------------------------------------
+
+enum Permiso << (e, 00000000) >> $enum $permisos {
+  CONSULTAR_CASOS
+  CONSULTAR_CASOS_PROPIOS
+  CREAR_CASO
+  <b>CREAR_CASO_IMPERSONAR</b>
+  <b>MODIFICAR_CASOS</b>
+  MODIFICAR_CASOS_PROPIOS
+  <b>ELIMINAR_CASOS</b>
+  ELIMINAR_CASOS_PROPIOS
+  CONSULTAR_LISTA_USUARIOS
+  CONSULTAR_PERFIL_USUARIO
+  CONSULTAR_PERFIL_USUARIO_PROPIO
+  CREAR_USUARIO
+  MODIFICAR_USUARIO
+  MODIFICAR_USUARIOS
+  ELIMINAR_USUARIO
+  ELIMINAR_USUARIO_PROPIO
+  CREAR_ROL
+  MODIFICAR_ROL
+  ELIMINAR_ROL
+  OTROGAR_PERMISO_A_ROL
+  REMOVER_PERMISO_A_ROL
+  OTORGAR_ROL_A_USUARIO
+  REMOVER_ROL_A_USUARIO
+  CREAR_HORARIO
+  <b>CREAR_HORARIO_IMPERSONAR</b>
+  MODIFICAR_HORARIO
+  <b>MODIFICAR_HORARIO_IMPERSONAR</b>
+  ELIMINAR_HORARIO
+  <b>ELIMINAR_HORARIO_IMPERSONAR</b>
+  <b>MODIFICAR_TIPIFICADORES</b>
+}
+enum EstadoTurno << (e, 00000000) >> $enum {
+  DISPONIBLE
+  RESERVADO
+  VENCIDO_ASISTIDO
+  VENCIDO_NO_ASISTIDO
+}
+enum UnidadMedida << (e, 00000000) >> $enum {
+  UNIDAD
+  GRAMO
+  LITRO
+  METRO
+}
+enum Día << (e, 00000000) >> $enum {
+  DOMINGO
+  LUNES
+  MARTES
+  MIÉRCOLES
+  JUEVES
+  VIERNES
+  SÁBADO
+}
+
+' -----------------------------------------------------------------------------
+' | NOTAS (Instancias tipificadores)                                          |
+' -----------------------------------------------------------------------------
+
+note as InstanciasTipoRecurso
+Arroz,
+Silla de ruedas,
+Ibuprofeno
+end note
+note as InstanciasEscolaridad
+Sin escolaridad,
+Primario incompleto,
+Primario completo,
+Secundario incompleto,
+Secundario completo,
+end note
+note as InstanciasDerechoVulnerado
+Educación,
+Salud,
+Vivienda,
+...
+end note
+note as InstanciasProfesión
+Asistencia social,
+Psicología,
+Pediatría,
+...
+end note
+note as InstanciasVínculo
+Madre,
+Padre,
+Tío,
+Tía,
+Abuelo,
+Abuela,
+Hermano,
+Hermana,
+...
+end note
+note as InstanciasEstadoCaso
+Tomado,
+Suspendido,
+Finalizado por mayoría de edad,
+Finalizado por necesidad resuelta,
+Finalizado por fallecimiento,
+...
+end note
+note as InstanciasRol
+Administrador del sistema,
+Coordinador,
+Profesional,
+Responable ETI
+end note
+
+' -----------------------------------------------------------------------------
+' | NOTAS (Comentarios)                                                       |
+' -----------------------------------------------------------------------------
+
+note as NotaIDCompuesto
+**Nota sobre id compuesto**:
+MySQL usa claves primarias compuestas, definidas en Prisma como:
+""@@id([idProfesión, idUsuario])""
+con la precaución de agregar a los atributos idEspecialdad e idUsuario:
+""@unique""
+
+En nuestro caso, como no vamos a usar MySQL, definimos una clave primaria
+única para cada entidad.
+end note
+note as NotaTODODTE $enum
+Hacer DTE
+end note
+note as NotaPermisos $permisos $enum
+Los permisos en <b>negrita</b> están pensados solo para el administrador.
+TODO: Permisos de recursos, donaciones y donantes.
+TODO: Completar si aparecen más con las US ...
+end note
+note as NotaPermisos2 $permisos $enum
+Tabla de permisos
+|=Permiso |=Método del controlador |=Método HTTP |=Ruta |=Filtros (si aplican)|
+|CONSULTAR_CASOS                 |index, show | GET | /casos/ | |
+|CONSULTAR_CASOS_PROPIOS         |index, show | GET | /casos/ | idUsuario correspondiente al login |
+|CREAR_CASO                      |create | POST | /casos/ | idUsuario correspondiente al login |
+|CREAR_CASO_IMPERSONAR           |create | POST | /casos/ | |
+|MODIFICAR_CASOS                 |update | PUT | /casos/{id}/ | |
+|MODIFICAR_CASOS_PROPIOS         |update | PUT | /casos/{id}/ | idUsuario correspondiente al login |
+|ELIMINAR_CASOS                  |destroy | DELETE | /casos/{id}/ | |
+|ELIMINAR_CASOS_PROPIOS          |destroy | DELETE | /casos/{id}/ | idUsuario correspondiente al login |
+|CONSULTAR_LISTA_USUARIOS        |index | GET | /usuarios/ | |
+|CONSULTAR_PERFIL_USUARIO        |show | GET | /usuarios/{id} | |
+|CONSULTAR_PERFIL_USUARIO_PROPIO |show | GET | /usuarios/{id} | idUsuario correspondiente al login |
+|CREAR_USUARIO                   |create | POST | /usuarios/ | |
+|MODIFICAR_USUARIO               |update | PUT | /usuarios/{id}/ | idUsuario correspondiente al login |
+|MODIFICAR_USUARIOS              |update | PUT | /usuarios/{id}/ | |
+|ELIMINAR_USUARIO                |destroy | DELETE | /usuarios/{id}/ | |
+|ELIMINAR_USUARIO_PROPIO         |destroy | DELETE | /usuarios/{id}/ | idUsuario correspondiente al login |
+|CREAR_ROL                       |create | POST | /roles/ | |
+|MODIFICAR_ROL                   |update | PUT | /roles/{id}/ | |
+|ELIMINAR_ROL                    |destroy | DELETE | /roles/{id}/ | idRol distinto a 0, correspondiente al rol de administrador|
+|OTROGAR_PERMISO_A_ROL           |create | POST | /roles/{id}/permisos | |
+|REMOVER_PERMISO_A_ROL           |update | PUT | /roles/{id}/permisos/ | |
+|OTORGAR_ROL_A_USUARIO           |create | POST | usuarios/{id}/roles | |
+|REMOVER_ROL_A_USUARIO           |update | PUT | usuarios/{id}/roles/{id}/ | si es el rol de administrador, verificar que idUsuario sea DISTINTO al correspondiente al login  |
+|CREAR_HORARIO                   |create | POST | /usuarios/{id}/horarios/ | idUsuario correspondiente al login |
+|CREAR_HORARIO_IMPERSONAR        |create | POST | /usuarios/{id}/horarios/ | |
+|MODIFICAR_HORARIO               |update | PUT | /usuarios/{id}/horarios/{id}/ | idUsuario correspondiente al login |
+|MODIFICAR_HORARIO_IMPERSONAR    |update | PUT | /usuarios/{id}/horarios/{id}/ | |
+|ELIMINAR_HORARIO                |destroy | DELETE | /usuarios/{id}/horarios/{id}/ | idUsuario correspondiente al login |
+|ELIMINAR_HORARIO_IMPERSONAR     |destroy | DELETE | /usuarios/{id}/horarios/{id}/ | |
+|MODIFICAR_TIPIFICADORES         |? | ? | ? | // TODO |
+end note
+
+' -----------------------------------------------------------------------------
+' | Tablas, generadas por Prisma                                              |
+' -----------------------------------------------------------------------------
+
+class _DonaciónToDonante << (T, 00000000) >> {
+  .. Claves foráneas ..
+  idDonación
+  idDonante
+}
+class _CasoToDerechoVulnerado << (T, 00000000) >> {
+  .. Claves foráneas ..
+  idCaso
+  idDerechoVulnerado
+}
+
+' -----------------------------------------------------------------------------
+' | Relaciones                                                                |
+' -----------------------------------------------------------------------------
+
+Usuario "1" *--> "0..*" Horario: "horarios"
+Usuario "1" *--> "1..*" HistoriaVigenciaUsuario: "historialVigencia"
+Usuario "0..*" x--> "1" TipoIdentificación: "tipoIdentificación"
+Caso "0..*" --> "1" Usuario: "creadoPor"
+Caso "1" *--> "0..*" CasoAsignado: "asignacionesUsuario"
+CasoAsignado "0..*" --> "1" Usuario: "usuarioAsignado"
+Turno "1" *--> "1..*" HistoriaEstadoTurno: "estados"
+Turno "0..*" --> "1" Usuario: "usuario"
+HistoriaEstadoTurno "0..*" --> "0..1" Caso: "caso"
+Recurso "0..*" --> "1" TipoRecurso: "tipoRecurso"
+Usuario "1" *--> "0..*" HistoriaRolUsuario: "asignacionesDeRol"
+HistoriaRolUsuario "0..*" --> "1" Rol: "rol"
+Rol "1" *--> "0..*" HistoriaPermisoRol: "asignacionesDePermiso"
+Usuario "1" *--> "0..*" HistoriaProfesión: "asignacionesDeProfesión"
+HistoriaProfesión "0..*" --> "1" Profesión: "profesión"
+Caso "0..1" --> "0..*" AsignaciónRecurso: "recursosAsignados"
+AsignaciónRecurso "0..*" --> "1" Recurso: "recurso"
+Recurso "1" --> "0..1" Donación: "donación"
+Donación "0..*" --> "0..*" Donante: "donantes"
+Caso "0..*" --> "1..*" DerechoVulnerado: "derechoVulnerado"
+Conviviente "0..*" x--> "1" Vínculo: "vínculo"
+Conviviente "0..*" --> "1" Escolaridad: "escolaridad"
+Caso "1" *--> "0..*" Conviviente: "convivientes"
+Caso "1" *--> "0..*" AvanceCaso: "avances"
+AvanceCaso "0..*" --> "1" Usuario: "registradoPor"
+Caso "1..*" *--> "1..*" HistoriaEstadoCaso: "historialEstados"
+HistoriaEstadoCaso "0..*" --> "1" EstadoCaso: "estado"
+EstadoCaso --> "0..*" EstadoCaso: "sucesores"
+
+HistoriaEstadoTurno ..> EstadoTurno
+HistoriaPermisoRol ..> Permiso
+Horario ..> Día
+TipoRecurso ..> UnidadMedida
+
+TipoRecurso .. InstanciasTipoRecurso
+Escolaridad .. InstanciasEscolaridad
+DerechoVulnerado .. InstanciasDerechoVulnerado
+Profesión .. InstanciasProfesión
+Vínculo .. InstanciasVínculo
+EstadoCaso .. InstanciasEstadoCaso
+Rol .. InstanciasRol
+HistoriaProfesión .. NotaIDCompuesto
+EstadoTurno .. NotaTODODTE
+Permiso .. NotaPermisos
+Permiso .. NotaPermisos2
+
+
+(Donación, Donante) .. _DonaciónToDonante
+(Caso, DerechoVulnerado) .. _CasoToDerechoVulnerado
+
+' Esconder enumeraciones
+remove $enum
+
+' Esconder Permisos
+' remove $permisos
+
+' Esconder Identificación
+remove $identificación
+
+@enduml

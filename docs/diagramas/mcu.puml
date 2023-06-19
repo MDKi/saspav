@@ -1,0 +1,91 @@
+@startuml CasosUso
+
+!theme vibrant
+skinparam monochrome true
+
+skinparam style strictuml
+left to right direction
+
+' -----------------
+' | Actores       |
+' -----------------
+
+actor "Usuario" as usuario
+
+actor Coordinador as coord
+actor Profesional as pro
+actor "Responsable Externo" as eti
+actor "Administrador del sistema" as admin
+actor "Reloj" as reloj
+' coord --|> usuario
+' pro --|> usuario
+' eti --|> usuario
+' admin --|> usuario
+usuario <|-- coord
+usuario <|-- pro
+usuario <|-- eti
+usuario <|-- admin
+
+' -----------------
+' | Casos de uso  |
+' -----------------
+rectangle SASPAV {
+(Gestionar turno) as abmturno
+(ABMC Caso) as abmccaso
+(Alta Usuario) as altausuario
+(ABMC Donante) as abmcdonante
+(Blanquear contraseña a Usuario) as blanquearcontraseña
+(Restablecer contraseña) as restablecercontraseña
+(Cambiar contraseña) as cambiarcontraseña
+(ABMC Recursos) as abmcrecursos
+
+pro --> abmturno
+coord --> abmturno
+coord --> abmcdonante
+pro --> (ABM Avance de caso)
+pro --> (Gestionar horarios)
+coord --> abmccaso
+eti --> abmccaso
+coord --> (Asignar profesional a caso)
+coord --> (Asignar recurso a caso)
+coord --> abmcrecursos
+coord --> (Generar reportes)
+
+admin --> (ABMC Rol)
+admin --> (Establecer Permiso a Rol)
+admin --> altausuario
+admin --> blanquearcontraseña
+admin --> (Modificar datos de Usuario)
+admin --> (Establecer Rol a Usuario)
+admin --> (ABMC Profesión)
+admin --> (ABMC Estado de caso)
+admin --> (Exportar sistema a archivo)
+admin --> (Restablecer sistema desde archivo)
+
+usuario --> restablecercontraseña
+usuario --> cambiarcontraseña
+
+reloj --> (Alertar vencimiento de recursos)
+
+altausuario .> blanquearcontraseña: "<<include>>"
+abmcdonante .> abmcrecursos: "<<extend>>"
+
+' remove blanquearcontraseña
+' remove restablecercontraseña
+' remove cambiarcontraseña
+
+' -----------------
+' | Notas         |
+' -----------------
+
+note as notaturno
+El coordinador asigna el primer
+turno de un caso con el profesional.
+El profesional asignar los turnos
+siguientes.
+end note
+abmturno .. notaturno
+
+}
+
+@enduml
