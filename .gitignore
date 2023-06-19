@@ -3,3 +3,6 @@
 
 # Tools directory
 tools
+
+# Output directory
+docs/out
