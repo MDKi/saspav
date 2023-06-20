@@ -6,3 +6,4 @@ tools
 
 # Output directory
 docs/out
+node_modules
