@@ -29,6 +29,7 @@ entity Usuario {
   nombre: String
   apellido: String
   teléfono: String?
+  salt: String
   hashSaltContraseña: String
   vencimientoContraseña: Date
   .. Relaciones ..
