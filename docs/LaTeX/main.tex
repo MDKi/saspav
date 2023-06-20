@@ -1,0 +1,42 @@
+\documentclass{report}
+
+% Required for inserting images
+\usepackage{graphicx}
+\usepackage{svg}
+
+% Better tables
+\usepackage{tabularx}
+
+% Page numbering
+\usepackage{fancyhdr}
+
+% Language
+\usepackage{polyglossia}
+\setmainlanguage{spanish}
+\gappto\captionsspanish{
+\renewcommand{\tablename}{Tabla}
+\renewcommand{\listtablename}{Índice de tablas}
+}
+
+% Metadata
+\title{Proyecto final}
+\author{Gabriel Fuertes, Ayton Funes Castillo, Francisco Gallardo Lemos, Martín Mazzeo Gil}
+\date{2023}
+
+\begin{document}
+
+\input{caratula}
+% TODO: Numbering
+\input{preambulo}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\cleardoublepage
+
+\input{capitulos}
+
+\section{Prueba1}
+\section{Prueba2}
+\end{document}
