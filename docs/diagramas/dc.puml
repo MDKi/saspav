@@ -29,9 +29,11 @@ entity Usuario {
   nombre: String
   apellido: String
   teléfono: String?
-  salt: String
+  salt: String @unique
   hashSaltContraseña: String
   vencimientoContraseña: Date
+  tokenReestablecerContraseña: String?
+  vencimientoToken: DateTime
   .. Relaciones ..
   historialVigencia: HistorialVigenciaUsuario
   tipoIdentificación: TipoIdentificación
