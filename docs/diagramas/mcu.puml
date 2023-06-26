@@ -31,43 +31,50 @@ usuario <|-- admin
 ' -----------------
 rectangle SASPAV {
 (Gestionar turno) as abmturno
-(ABMC Caso) as abmccaso
-(Alta Usuario) as altausuario
+(Alta/Baja Caso) as abcaso
+(Moficar/Consultar Caso) as mccaso
+(Alta/Baja Usuario) as altabajausuario
+(Modificacion/Consulta Usuario) as modificacionconsulta
 (ABMC Donante) as abmcdonante
 (Blanquear contraseña a Usuario) as blanquearcontraseña
 (Restablecer contraseña) as restablecercontraseña
 (Cambiar contraseña) as cambiarcontraseña
+(Gestionar contraseña de usuario) as gestionarcontraseña
 (ABMC Recursos) as abmcrecursos
+(ABM Tipo Recurso) as tiporecurso
 
 pro --> abmturno
 coord --> abmturno
 coord --> abmcdonante
+pro --> mccaso
 pro --> (ABM Avance de caso)
 pro --> (Gestionar horarios)
-coord --> abmccaso
-eti --> abmccaso
+coord --> abcaso
+coord --> mccaso
+coord --> tiporecurso
+eti --> abcaso
+eti --> mccaso
 coord --> (Asignar profesional a caso)
 coord --> (Asignar recurso a caso)
 coord --> abmcrecursos
 coord --> (Generar reportes)
 
 admin --> (ABMC Rol)
-admin --> (Establecer Permiso a Rol)
-admin --> altausuario
 admin --> blanquearcontraseña
-admin --> (Modificar datos de Usuario)
+admin --> altabajausuario
 admin --> (Establecer Rol a Usuario)
 admin --> (ABMC Profesión)
 admin --> (ABMC Estado de caso)
 admin --> (Exportar sistema a archivo)
-admin --> (Restablecer sistema desde archivo)
+' admin --> (Restablecer sistema desde archivo)
 
 usuario --> restablecercontraseña
-usuario --> cambiarcontraseña
+usuario --> modificacionconsulta
+usuario --> gestionarcontraseña
 
 reloj --> (Alertar vencimiento de recursos)
 
-altausuario .> blanquearcontraseña: "<<include>>"
+' altausuario .> blanquearcontraseña: "<<include>>"
 abmcdonante .> abmcrecursos: "<<extend>>"
 
 ' remove blanquearcontraseña

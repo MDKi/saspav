@@ -24,7 +24,7 @@ skinparam monochrome true
 entity Usuario {
   idUsuario: Int @id @default(autoincrement())
 ' identificación: String @unique $identificación
-  legajo: String @unique
+  legajo: Number @unique (autoincrement())
   email: String @unique
   nombre: String
   apellido: String
@@ -141,7 +141,7 @@ entity HistoriaPermisoRol << Historiador >> {
 }
 entity Caso {
   idCaso: Int @id @default(autoincrement())
-  codCaso: Int @default(autoincrement)
+  codCaso: Int
   nombre: String?
   apellido: String?
   dni: String?
@@ -281,6 +281,8 @@ entity EstadoCaso << Tipificador >> {
 entity Rol << Tipificador >> {
   idRol: Int @id @default(autoincrement())
   nombreRol: String
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt  
   .. Relaciones ..
   asignacionesDePermiso: HistoriaPermisoRol[]
   .. Relaciones inversas ..
@@ -290,6 +292,8 @@ entity Rol << Tipificador >> {
 entity DerechoVulnerado << Tipificador >> {
   idDerechoVulnerado: Int @id @default(autoincrement())
   nombreDerechoVulnerado: String
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
   .. Relaciones ..
   .. Relaciones inversas ..
   casos: Caso[]
@@ -298,10 +302,14 @@ entity DerechoVulnerado << Tipificador >> {
 entity Escolaridad << Tipificador >> {
   idEscolaridad: Int @id @default(autoincrement())
   nombreEscolaridad: String
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
 }
 entity Vínculo << Tipificador >> {
   idVínculo: Int @id @default(autoincrement())
   nombreVínculo: String
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
   .. Relaciones ..
   .. Relaciones inversas ..
   : Conviviente[] // Explícitamente omitida
@@ -310,6 +318,8 @@ entity Vínculo << Tipificador >> {
 entity Profesión << Tipificador >> {
   idProfesión: Int @id @default(autoincrement())
   nombreProfesión: String
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
   .. Relaciones ..
   .. Relaciones inversas ..
   asignadoA: HistoriaProfesión[]
