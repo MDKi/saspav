@@ -576,7 +576,7 @@ Permiso .. NotaPermisos2
 (Caso, DerechoVulnerado) .. _CasoToDerechoVulnerado
 
 ' Esconder enumeraciones
-remove $enum
+' remove $enum
 
 ' Esconder Permisos
 ' remove $permisos

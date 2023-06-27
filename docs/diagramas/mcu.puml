@@ -75,7 +75,7 @@ usuario --> gestionarcontraseña
 reloj --> (Alertar vencimiento de recursos)
 
 ' altausuario .> blanquearcontraseña: "<<include>>"
-abmcdonante .> abmcrecursos: "<<extend>>"
+' abmcdonante .> abmcrecursos: "<<extend>>"
 
 ' remove blanquearcontraseña
 ' remove restablecercontraseña
