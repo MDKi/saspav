@@ -72,3 +72,248 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+// model Usuario {
+//   idUsuario                     Int                      @id @default(autoincrement())
+//   legajo                        Int                      @unique
+//   email                         String                   @unique
+//   nombre                        String
+//   apellido                      String
+//   telefono                      String?
+//   salt                          String                   @unique
+//   hashSaltContrasea            String
+//   vencimientoContrasea         DateTime
+//   tokenReestablecerContrasea   String?
+//   vencimientoToken              DateTime
+//   historialVigencia             HistoriaVigenciaUsuario[]
+// }
+
+// model HistoriaVigenciaUsuario {
+//   idHistoriaUsuario             Int                      @id @default(autoincrement())
+//   inicioVigencia                DateTime                 @default(now())
+//   finVigencia                   DateTime                 @updatedAt
+//   motivo                        String
+//   usuarioId                     Int
+//   usuario                       Usuario                  @relation(fields: [usuarioId], references: [idUsuario])
+// }
+
+
+// model TipoIdentificacion {
+//   idTipoIdentificacion Int  @id @default(autoincrement())
+//   nombreIdentificacion String
+//   Usuario            Usuario[] // Explícitamente omitida
+// }
+
+// model HistoriaEstadoTurno {
+//   idHistoriaEstadoTurno Int   @id @default(autoincrement())
+//   inicioVigencia   DateTime   @default(now())
+//   finVigencia      DateTime   @updatedAt
+//   estadoTurno      EstadoTurno
+//   motivoTurno      String?
+//   caso             Caso?
+//   turno            Turno
+// }
+
+// model Turno {
+//   idTurno          Int        @id @default(autoincrement())
+//   inicioTurno      DateTime
+//   finTurno         DateTime
+//   usuario          Usuario
+//   estados          HistoriaEstadoTurno[]
+// }
+
+// model Horario {
+//   idHorario        Int        @id @default(autoincrement())
+//   dia              Dia
+//   horaInicio       String
+//   horaFin          String
+//   inicioVigencia   DateTime   @default(now())
+//   finVigencia      DateTime   @updatedAt
+//   usuario          Usuario
+// }
+
+// model CasoAsignado {
+//   idCasoAsignado   Int        @id @default(autoincrement())
+//   inicioVigencia   DateTime   @default(now())
+//   finVigencia      DateTime   @updatedAt
+//   usuarioAsignado  Usuario
+//   caso             Caso
+// }
+
+// model HistoriaRolUsuario {
+//   idHistoriaRolUsuario Int    @id @default(autoincrement())
+//   inicioVigencia   DateTime   @default(now())
+//   finVigencia      DateTime   @updatedAt
+//   rol              Rol
+//   usuario          Usuario
+// }
+
+// model HistoriaPermisoRol {
+//   idHistoriaPermisoRol Int    @id @default(autoincrement())
+//   inicioVigencia   DateTime   @default(now())
+//   finVigencia      DateTime   @updatedAt
+//   permiso          Permiso
+//   rol              Rol
+// }
+
+// model Caso {
+//   idCaso           Int        @id @default(autoincrement())
+//   codCaso          Int
+//   nombre           String?
+//   apellido         String?
+//   dni              String?
+//   fechaNacimiento  DateTime?
+//   motivoIngreso    String?
+//   ocupacion        String?
+//   fechaIngreso     DateTime
+//   observaciones    String?
+//   genograma        String?
+//   inicioVigencia   DateTime   @default(now())
+//   finVigencia      DateTime   @updatedAt
+//   usuarioCreador   Usuario
+//   asignacionesRecurso AsignacionRecurso[]
+//   avancesCaso      AvanceCaso[]
+//   derechosVulnerados DerechoVulnerado[]
+//   escolaridades    Escolaridad[]
+//   vinculos         Vinculo[]
+// }
+
+// model Recurso {
+//   idRecurso        Int        @id @default(autoincrement())
+//   nombre           String
+//   tipoRecurso      TipoRecurso
+//   disponibilidad   String
+//   inicioVigencia   DateTime   @default(now())
+//   finVigencia      DateTime   @updatedAt
+//   asignacionesRecurso AsignacionRecurso[]
+// }
+
+// model AsignacionRecurso {
+//   idAsignacionRecurso Int        @id @default(autoincrement())
+//   inicioVigencia   DateTime   @default(now())
+//   finVigencia      DateTime   @updatedAt
+//   recurso          Recurso
+//   caso             Caso
+// }
+
+// model HistoriaProfesion {
+//   idHistoriaProfesion Int     @id @default(autoincrement())
+//   inicioVigencia   DateTime   @default(now())
+//   finVigencia      DateTime   @updatedAt
+//   profesion        Profesion
+//   usuario          Usuario
+// }
+
+// model HistoriaEstadoCaso {
+//   idHistoriaEstadoCaso Int        @id @default(autoincrement())
+//   inicioVigencia   DateTime   @default(now())
+//   finVigencia      DateTime   @updatedAt
+//   estadoCaso       EstadoCaso
+//   caso             Caso
+// }
+
+// model Donacion {
+//   idDonacion       Int        @id @default(autoincrement())
+//   fechaDonacion    DateTime
+//   tipoDonacion     String
+//   motivoDonacion   String?
+//   observaciones    String?
+//   donante          Donante
+//   caso             Caso
+// }
+
+// model AvanceCaso {
+//   idAvanceCaso     Int        @id @default(autoincrement())
+//   fechaAvance      DateTime
+//   descripcion      String
+//   caso             Caso
+//   usuario          Usuario
+// }
+
+// model Donante {
+//   idDonante        Int        @id @default(autoincrement())
+//   nombre           String
+//   apellido         String
+//   dni              String
+//   telefono         String?
+//   direccion        String?
+//   email            String?
+//   observaciones    String?
+//   donaciones       Donacion[]
+// }
+
+// model Conviviente {
+//   idConviviente    Int        @id @default(autoincrement())
+//   nombre           String
+//   apellido         String
+//   dni              String
+//   fechaNacimiento  DateTime?
+//   ocupacion        String?
+//   escolaridad      Escolaridad?
+//   vinculo          Vinculo?
+//   caso             Caso
+// }
+
+// model EstadoCaso {
+//   idEstadoCaso     Int        @id @default(autoincrement())
+//   nombreEstado     String
+//   historias        HistoriaEstadoCaso[]
+//   casos            Caso[]
+// }
+
+// model Rol {
+//   idRol            Int        @id @default(autoincrement())
+//   nombreRol        String
+//   historias        HistoriaRolUsuario[]
+//   permisos         HistoriaPermisoRol[]
+// }
+
+// model DerechoVulnerado {
+//   idDerechoVulnerado Int        @id @default(autoincrement())
+//   nombreDerecho     String
+//   casos             Caso[]
+// }
+
+// model Escolaridad {
+//   idEscolaridad    Int        @id @default(autoincrement())
+//   nivel            String
+//   convivientes     Conviviente[]
+// }
+
+// model Vinculo {
+//   idVinculo        Int        @id @default(autoincrement())
+//   nombreVinculo    String
+//   convivientes     Conviviente[]
+// }
+
+// model Profesion {
+//   idProfesion      Int        @id @default(autoincrement())
+//   nombreProfesion  String
+//   historias        HistoriaProfesion[]
+// }
+
+// model EstadoTurno {
+//   idEstadoTurno    Int        @id @default(autoincrement())
+//   nombreEstado     String
+//   historias        HistoriaEstadoTurno[]
+//   turnos           Turno[]
+// }
+
+// model Permiso {
+//   idPermiso        Int        @id @default(autoincrement())
+//   nombrePermiso    String
+//   descripcionPermiso String?
+//   historias        HistoriaPermisoRol[]
+// }
+
+// model TipoRecurso {
+//   idTipoRecurso    Int        @id @default(autoincrement())
+//   nombreTipoRecurso String
+//   recursos         Recurso[]
+// }
+
+// model Dia {
+//   idDia            Int        @id @default(autoincrement())
+//   nombreDia        String
+//   horarios         Horario[]
+// }
