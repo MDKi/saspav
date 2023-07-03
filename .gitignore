@@ -43,6 +43,10 @@ yarn-error.log*
 # Tools directory
 tools
 
+# Prisma migrations
+prisma/migrations/*
+
+
 # Output directory
 docs/out
 node_modules

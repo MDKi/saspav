@@ -6,13 +6,18 @@ generator client {
     previewFeatures = ["jsonProtocol"]
 }
 
+// datasource db {
+//     provider = "sqlite"
+//     // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+//     // Further reading:
+//     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+//     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+//     url      = env("DATABASE_URL")
+// }
+
 datasource db {
-    provider = "sqlite"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = "postgresql://postgres:admin@127.0.0.1:5432/saspav"
 }
 
 model Example {
@@ -73,247 +78,314 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-// model Usuario {
-//   idUsuario                     Int                      @id @default(autoincrement())
-//   legajo                        Int                      @unique
-//   email                         String                   @unique
-//   nombre                        String
-//   apellido                      String
-//   telefono                      String?
-//   salt                          String                   @unique
-//   hashSaltContrasea            String
-//   vencimientoContrasea         DateTime
-//   tokenReestablecerContrasea   String?
-//   vencimientoToken              DateTime
-//   historialVigencia             HistoriaVigenciaUsuario[]
-// }
+model Usuario {
+  idUsuario                Int                    @id @default(autoincrement())
+  nombre                   String
+  apellido                 String
+  dni                      String
+  email                    String
+  telefono                 String?
+  direccion                String?
+  fechaNacimiento          DateTime?
+  fechaCreacion            DateTime               @default(now())
+  roles                    Rol[]                  // Relacion añadida
+  historialVigencia         HistoriaVigenciaUsuario[]
+  // tipoIdentificacion       TipoIdentificacion?     @relation(fields: [idTipoIdentificacion], references: [idTipoIdentificacion])
+  // idTipoIdentificacion     Int?
+  // casosAsignados           CasoAsignado[]          // Relacion añadida
+  // horarios                 Horario[]               // Relacion añadida
+  asignacionesDeRol        HistoriaRolUsuario[]    // Relacion añadida
+  asignacionesDeProfesion  HistoriaProfesion[]     // Relacion añadida
+}
 
-// model HistoriaVigenciaUsuario {
-//   idHistoriaUsuario             Int                      @id @default(autoincrement())
-//   inicioVigencia                DateTime                 @default(now())
-//   finVigencia                   DateTime                 @updatedAt
-//   motivo                        String
-//   usuarioId                     Int
-//   usuario                       Usuario                  @relation(fields: [usuarioId], references: [idUsuario])
-// }
-
-
-// model TipoIdentificacion {
-//   idTipoIdentificacion Int  @id @default(autoincrement())
-//   nombreIdentificacion String
-//   Usuario            Usuario[] // Explícitamente omitida
-// }
-
-// model HistoriaEstadoTurno {
-//   idHistoriaEstadoTurno Int   @id @default(autoincrement())
-//   inicioVigencia   DateTime   @default(now())
-//   finVigencia      DateTime   @updatedAt
-//   estadoTurno      EstadoTurno
-//   motivoTurno      String?
-//   caso             Caso?
-//   turno            Turno
-// }
-
-// model Turno {
-//   idTurno          Int        @id @default(autoincrement())
-//   inicioTurno      DateTime
-//   finTurno         DateTime
-//   usuario          Usuario
-//   estados          HistoriaEstadoTurno[]
-// }
+model HistoriaVigenciaUsuario {
+  idHistoriaVigenciaUsuario Int                   @id @default(autoincrement())
+  inicioVigencia           DateTime               @default(now())
+  finVigencia              DateTime               @default(now())
+  usuario                  Usuario                @relation(fields: [idUsuarioo], references: [idUsuario])
+  idUsuarioo                Int
+}
 
 // model Horario {
-//   idHorario        Int        @id @default(autoincrement())
-//   dia              Dia
-//   horaInicio       String
-//   horaFin          String
-//   inicioVigencia   DateTime   @default(now())
-//   finVigencia      DateTime   @updatedAt
-//   usuario          Usuario
-// }
-
-// model CasoAsignado {
-//   idCasoAsignado   Int        @id @default(autoincrement())
-//   inicioVigencia   DateTime   @default(now())
-//   finVigencia      DateTime   @updatedAt
-//   usuarioAsignado  Usuario
-//   caso             Caso
-// }
-
-// model HistoriaRolUsuario {
-//   idHistoriaRolUsuario Int    @id @default(autoincrement())
-//   inicioVigencia   DateTime   @default(now())
-//   finVigencia      DateTime   @updatedAt
-//   rol              Rol
-//   usuario          Usuario
-// }
-
-// model HistoriaPermisoRol {
-//   idHistoriaPermisoRol Int    @id @default(autoincrement())
-//   inicioVigencia   DateTime   @default(now())
-//   finVigencia      DateTime   @updatedAt
-//   permiso          Permiso
-//   rol              Rol
-// }
-
-// model Caso {
-//   idCaso           Int        @id @default(autoincrement())
-//   codCaso          Int
-//   nombre           String?
-//   apellido         String?
-//   dni              String?
-//   fechaNacimiento  DateTime?
-//   motivoIngreso    String?
-//   ocupacion        String?
-//   fechaIngreso     DateTime
-//   observaciones    String?
-//   genograma        String?
-//   inicioVigencia   DateTime   @default(now())
-//   finVigencia      DateTime   @updatedAt
-//   usuarioCreador   Usuario
-//   asignacionesRecurso AsignacionRecurso[]
-//   avancesCaso      AvanceCaso[]
-//   derechosVulnerados DerechoVulnerado[]
-//   escolaridades    Escolaridad[]
-//   vinculos         Vinculo[]
-// }
-
-// model Recurso {
-//   idRecurso        Int        @id @default(autoincrement())
-//   nombre           String
-//   tipoRecurso      TipoRecurso
-//   disponibilidad   String
-//   inicioVigencia   DateTime   @default(now())
-//   finVigencia      DateTime   @updatedAt
-//   asignacionesRecurso AsignacionRecurso[]
-// }
-
-// model AsignacionRecurso {
-//   idAsignacionRecurso Int        @id @default(autoincrement())
-//   inicioVigencia   DateTime   @default(now())
-//   finVigencia      DateTime   @updatedAt
-//   recurso          Recurso
-//   caso             Caso
-// }
-
-// model HistoriaProfesion {
-//   idHistoriaProfesion Int     @id @default(autoincrement())
-//   inicioVigencia   DateTime   @default(now())
-//   finVigencia      DateTime   @updatedAt
-//   profesion        Profesion
-//   usuario          Usuario
-// }
-
-// model HistoriaEstadoCaso {
-//   idHistoriaEstadoCaso Int        @id @default(autoincrement())
-//   inicioVigencia   DateTime   @default(now())
-//   finVigencia      DateTime   @updatedAt
-//   estadoCaso       EstadoCaso
-//   caso             Caso
-// }
-
-// model Donacion {
-//   idDonacion       Int        @id @default(autoincrement())
-//   fechaDonacion    DateTime
-//   tipoDonacion     String
-//   motivoDonacion   String?
-//   observaciones    String?
-//   donante          Donante
-//   caso             Caso
-// }
-
-// model AvanceCaso {
-//   idAvanceCaso     Int        @id @default(autoincrement())
-//   fechaAvance      DateTime
-//   descripcion      String
-//   caso             Caso
-//   usuario          Usuario
-// }
-
-// model Donante {
-//   idDonante        Int        @id @default(autoincrement())
-//   nombre           String
-//   apellido         String
-//   dni              String
-//   telefono         String?
-//   direccion        String?
-//   email            String?
-//   observaciones    String?
-//   donaciones       Donacion[]
-// }
-
-// model Conviviente {
-//   idConviviente    Int        @id @default(autoincrement())
-//   nombre           String
-//   apellido         String
-//   dni              String
-//   fechaNacimiento  DateTime?
-//   ocupacion        String?
-//   escolaridad      Escolaridad?
-//   vinculo          Vinculo?
-//   caso             Caso
-// }
-
-// model EstadoCaso {
-//   idEstadoCaso     Int        @id @default(autoincrement())
-//   nombreEstado     String
-//   historias        HistoriaEstadoCaso[]
-//   casos            Caso[]
-// }
-
-// model Rol {
-//   idRol            Int        @id @default(autoincrement())
-//   nombreRol        String
-//   historias        HistoriaRolUsuario[]
-//   permisos         HistoriaPermisoRol[]
-// }
-
-// model DerechoVulnerado {
-//   idDerechoVulnerado Int        @id @default(autoincrement())
-//   nombreDerecho     String
-//   casos             Caso[]
-// }
-
-// model Escolaridad {
-//   idEscolaridad    Int        @id @default(autoincrement())
-//   nivel            String
-//   convivientes     Conviviente[]
-// }
-
-// model Vinculo {
-//   idVinculo        Int        @id @default(autoincrement())
-//   nombreVinculo    String
-//   convivientes     Conviviente[]
-// }
-
-// model Profesion {
-//   idProfesion      Int        @id @default(autoincrement())
-//   nombreProfesion  String
-//   historias        HistoriaProfesion[]
-// }
-
-// model EstadoTurno {
-//   idEstadoTurno    Int        @id @default(autoincrement())
-//   nombreEstado     String
-//   historias        HistoriaEstadoTurno[]
-//   turnos           Turno[]
-// }
-
-// model Permiso {
-//   idPermiso        Int        @id @default(autoincrement())
-//   nombrePermiso    String
-//   descripcionPermiso String?
-//   historias        HistoriaPermisoRol[]
-// }
-
-// model TipoRecurso {
-//   idTipoRecurso    Int        @id @default(autoincrement())
-//   nombreTipoRecurso String
-//   recursos         Recurso[]
+//   idHorario                Int                    @id @default(autoincrement())
+//   diaSemana                Dia                    @relation(fields: [idDia], references: [idDia])
+//   idDia                    Int
+//   horaInicio               DateTime
+//   horaFin                  DateTime
+//   usuarios                 Usuario[]              // Relacion añadida
 // }
 
 // model Dia {
-//   idDia            Int        @id @default(autoincrement())
-//   nombreDia        String
-//   horarios         Horario[]
+//   idDia                    Int                    @id @default(autoincrement())
+//   nombreDia                String
+//   horarios                 Horario[]
 // }
+
+
+
+// model TipoIdentificacion {
+//   idTipoIdentificacion     Int                    @id @default(autoincrement())
+//   nombreTipoIdentificacion String
+//   usuarios                 Usuario[]
+// }
+
+// model Caso {
+//   idCaso                   Int                    @id @default(autoincrement())
+//   codigo                   String
+//   descripcion              String
+//   fechaCreacion            DateTime               @default(now())
+//   creadoPor                Usuario                
+//   creadoPorIdUsuario       Int
+//   asignacionesUsuario      CasoAsignado[]          // Relacion añadida
+//   convivientes             Conviviente[]           // Relacion añadida
+//   avances                  AvanceCaso[]            // Relacion añadida
+//   derechoVulnerado         DerechoVulnerado[]      // Relacion añadida
+//   historialEstados         HistoriaEstadoCaso[]    // Relacion añadida
+//   recursosAsignados        AsignacionRecurso[]     // Relacion añadida
+// }
+
+// model CasoAsignado {
+//   idCasoAsignado           Int                    @id @default(autoincrement())
+//   inicioVigencia           DateTime               @default(now())
+//   finVigencia              DateTime               @updatedAt
+//   usuarioAsignado          Usuario                @relation(fields: [usuarioAsignadoIdUsuario], references: [idUsuario])
+//   usuarioAsignadoIdUsuario Int
+//   caso                     Caso                   @relation(fields: [casoIdCaso], references: [idCaso])
+//   casoIdCaso               Int
+// }
+
+// model Turno {
+//   idTurno                  Int                    @id @default(autoincrement())
+//   fechaTurno               DateTime
+//   usuario                  Usuario               
+//   usuarioIdUsuario         Int?
+//   estados                  HistoriaEstadoTurno[]   // Relacion añadida
+// }
+
+// model HistoriaEstadoTurno {
+//   idHistoriaEstadoTurno    Int                    @id @default(autoincrement())
+//   fechaCambio              DateTime
+//   estadoTurno              EstadoTurno            @relation(fields: [estadoTurnoIdEstadoTurno], references: [idEstadoTurno])
+//   estadoTurnoIdEstadoTurno Int
+//   turno                    Turno                  @relation(fields: [turnoIdTurno], references: [idTurno])
+//   turnoIdTurno             Int
+  
+//   caso                     Caso?                  @relation(fields: [casoIdCaso], references: [idCaso])
+//   casoIdCaso               Int?
+// }
+
+// model EstadoTurno {
+//   idEstadoTurno            Int                    @id @default(autoincrement())
+//   nombreEstadoTurno        String
+//   historiaEstadoTurno      HistoriaEstadoTurno[]  // Relacion añadida
+//   turno                    Turno[]                // Relacion añadida
+// }
+
+
+// model Recurso {
+//   idRecurso                Int                    @id @default(autoincrement())
+//   nombreRecurso            String
+//   tipoRecurso              TipoRecurso?           @relation(fields: [tipoRecursoIdTipoRecurso], references: [idTipoRecurso])
+//   tipoRecursoIdTipoRecurso Int?
+//   asignacionesRecurso      AsignacionRecurso[]     // Relacion añadida
+//   donacion                 Donacion?              @relation(fields: [donacionIdDonacion], references: [idDonacion])
+//   donacionIdDonacion       Int?
+// }
+
+// model Donacion {
+//   idDonacion         Int      @id @default(autoincrement())
+//   fechaDonacion      DateTime
+//   donantes           Donante[] // Relacion
+//   recursoDonado      Recurso   // Relacion inversa
+//   idRecurso          Int      @map("idRecurso") // Clave foránea
+// }
+
+// model Donante {
+//   idDonante          Int      @id @default(autoincrement())
+//   nombre             String
+//   apellido           String
+//   dni                String
+//   telefono           String?
+//   direccion          String?
+//   email              String?
+//   observaciones      String?
+//   donaciones         Donacion[] // Relación inversa
+// }
+
+
+// model TipoRecurso {
+//   idTipoRecurso            Int                    @id @default(autoincrement())
+//   nombreTipoRecurso        String
+//   recursos                 Recurso[]
+//   instanciasTipoRecurso    InstanciasTipoRecurso[] // Relacion añadida
+// }
+
+// model AsignacionRecurso {
+//   idAsignacionRecurso      Int                    @id @default(autoincrement())
+//   inicioVigencia           DateTime               @default(now())
+//   finVigencia              DateTime               @updatedAt
+//   recurso                  Recurso                @relation(fields: [recursoIdRecurso], references: [idRecurso])
+//   recursoIdRecurso         Int
+//   caso                     Caso                   @relation(fields: [casoIdCaso], references: [idCaso])
+//   casoIdCaso               Int
+// }
+
+model HistoriaRolUsuario {
+  idHistoriaRolUsuario     Int                    @id @default(autoincrement())
+  inicioVigencia           DateTime               @default(now())
+  finVigencia              DateTime               @updatedAt
+  usuario                  Usuario                @relation(fields: [usuarioIdUsuario], references: [idUsuario])
+  usuarioIdUsuario         Int
+  rol                      Rol                    @relation(fields: [rolIdRol], references: [idRol])
+  rolIdRol                 Int
+}
+
+model HistoriaPermisoRol {
+  idHistoriaPermisoRol Int     @id @default(autoincrement())
+  inicioVigencia       DateTime @default(now())
+  finVigencia          DateTime @updatedAt
+  permiso              Int[]
+  rol                  Rol      @relation(fields: [idRol], references: [idRol])
+  idRol                Int
+}
+
+model Rol {
+  idRol                    Int                    @id @default(autoincrement())
+  nombreRol                String
+  usuarios                 Usuario[]              // Relacion añadida
+  asignacionesDePermiso    HistoriaPermisoRol[]   // Relacion añadida
+  HistoriaPermisoRol       HistoriaRolUsuario[]   // Relacion añadida
+  
+}
+
+
+model HistoriaProfesion {
+  idHistoriaProfesion      Int                    @id @default(autoincrement())
+  inicioVigencia           DateTime               @default(now())
+  finVigencia              DateTime               @updatedAt
+  usuario                  Usuario                @relation(fields: [usuarioIdUsuario], references: [idUsuario])
+  usuarioIdUsuario         Int
+  profesion                Profesion              @relation(fields: [profesionIdProfesion], references: [idProfesion])
+  profesionIdProfesion     Int
+}
+
+model Profesion {
+  idProfesion              Int                    @id @default(autoincrement())
+  nombreProfesion          String
+  historiasProfesion       HistoriaProfesion[]    // Relacion añadida
+  inicioVigencia           DateTime               @default(now())
+  finVigencia              DateTime               @updatedAt
+}
+
+// model Conviviente {
+//   idConviviente            Int                    @id @default(autoincrement())
+//   nombre                   String
+//   apellido                 String
+//   edad                     Int
+//   vinculo                  Vinculo                @relation(fields: [vinculoIdVinculo], references: [idVinculo])
+//   vinculoIdVinculo         Int
+//   escolaridad              Escolaridad?           @relation(fields: [escolaridadIdEscolaridad], references: [idEscolaridad])
+//   escolaridadIdEscolaridad Int?
+//   caso                     Caso                   @relation(fields: [casoIdCaso], references: [idCaso])
+//   casoIdCaso               Int
+// }
+
+// model Escolaridad {
+//   idEscolaridad            Int                    @id @default(autoincrement())
+//   nombreEscolaridad        String
+//   convivientes             Conviviente[]           // Relacion añadida
+//   instanciasEscolaridad    InstanciasEscolaridad[] // Relacion añadida
+// }
+
+// model AvanceCaso {
+//   idAvanceCaso             Int                    @id @default(autoincrement())
+//   fechaAvance              DateTime
+//   descripcion              String
+//   registradoPor            Usuario                @relation(fields: [registradoPorIdUsuario], references: [idUsuario])
+//   registradoPorIdUsuario   Int
+//   caso                     Caso                   @relation(fields: [casoIdCaso], references: [idCaso])
+//   casoIdCaso               Int
+// }
+
+// model HistoriaEstadoCaso {
+//   idHistoriaEstadoCaso     Int                    @id @default(autoincrement())
+//   fechaCambio              DateTime
+//   estado                   EstadoCaso?            @relation(fields: [estadoIdEstadoCaso], references: [idEstadoCaso])
+//   estadoIdEstadoCaso       Int?
+//   caso                     Caso                   @relation(fields: [casoIdCaso], references: [idCaso])
+//   casoIdCaso               Int
+// }
+
+// model EstadoCaso {
+//   idEstadoCaso             Int                    @id @default(autoincrement())
+//   nombreEstadoCaso         String
+//   historialEstados         HistoriaEstadoCaso[]    // Relacion añadida
+//   sucesores                EstadoCaso[]         @relation("EstadoCasoSucesor")
+//   instanciasEstadoCaso     InstanciasEstadoCaso[] // Relacion añadida
+// }
+
+
+// model DerechoVulnerado {
+//   idDerechoVulnerado       Int                    @id @default(autoincrement())
+//   nombreDerechoVulnerado   String
+//   casos                    Caso[]                 // Relacion añadida
+//   instanciasDerechoVulnerado InstanciasDerechoVulnerado[] // Relacion añadida
+// }
+
+// model Vinculo {
+//   idVinculo                Int                    @id @default(autoincrement())
+//   nombreVinculo            String
+//   convivientes             Conviviente[]           // Relacion añadida
+//   instanciasVinculo        InstanciasVinculo[]    // Relacion añadida
+// }
+
+// model InstanciasTipoRecurso {
+//   idInstanciasTipoRecurso  Int                    @id @default(autoincrement())
+//   nombreInstanciasTipoRecurso String
+//   tipoRecurso              TipoRecurso             @relation(fields: [tipoRecursoIdTipoRecurso], references: [idTipoRecurso])
+//   tipoRecursoIdTipoRecurso Int
+// }
+
+// model InstanciasEscolaridad {
+//   idInstanciasEscolaridad  Int                    @id @default(autoincrement())
+//   nombreInstanciasEscolaridad String
+//   escolaridad              Escolaridad            @relation(fields: [escolaridadIdEscolaridad], references: [idEscolaridad])
+//   escolaridadIdEscolaridad Int
+// }
+
+// model InstanciasDerechoVulnerado {
+//   idInstanciasDerechoVulnerado Int                    @id @default(autoincrement())
+//   nombreInstanciasDerechoVulnerado String
+//   derechoVulnerado         DerechoVulnerado       @relation(fields: [derechoVulneradoIdDerechoVulnerado], references: [idDerechoVulnerado])
+//   derechoVulneradoIdDerechoVulnerado Int
+// }
+
+// model Profesion {
+//   idInstanciasProfesion    Int                    @id @default(autoincrement())
+//   nombreInstanciasProfesion String
+//   profesion                Profesion              @relation(fields: [profesionIdProfesion], references: [idProfesion])
+//   profesionIdProfesion     Int
+// }
+
+// model InstanciasVinculo {
+//   idInstanciasVinculo      Int                    @id @default(autoincrement())
+//   nombreInstanciasVinculo  String
+//   vinculo                  Vinculo                @relation(fields: [vinculoIdVinculo], references: [idVinculo])
+//   vinculoIdVinculo         Int
+// }
+
+// model InstanciasEstadoCaso {
+//   idInstanciasEstadoCaso   Int                    @id @default(autoincrement())
+//   nombreInstanciasEstadoCaso String
+//   estadoCaso               EstadoCaso             @relation(fields: [estadoCasoIdEstadoCaso], references: [idEstadoCaso])
+//   estadoCasoIdEstadoCaso   Int
+// }
+
+
+// model UnidadMedida {
+//   idUnidadMedida           Int                    @id @default(autoincrement())
+//   nombreUnidadMedida       String
+//   tipoRecurso              TipoRecurso            @relation(fields: [tipoRecursoIdTipoRecurso], references: [idTipoRecurso])
+//   tipoRecursoIdTipoRecurso Int
+// }
+

@@ -26,3 +26,26 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 ## How do I deploy this?
 
 Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+
+# Proyecto T3 Stack
+
+Este proyecto utiliza T3 Stack, una pila de tecnología basada en Next.js, Prisma, Tailwind y tRPC. Proporciona una estructura inicial para construir [descripción del proyecto]. A continuación se detallan los pasos para inicializar el proyecto en tu entorno local.
+
+## Requisitos previos
+
+Asegúrate de tener instalado lo siguiente en tu máquina:
+
+- Node.js (versión X.X.X)
+- npm (versión X.X.X)
+- Docker
+    - PostgreSQL (versión X.X.X)
+
+## Inicialización del proyecto
+
+Sigue los pasos a continuación para inicializar el proyecto:
+
+1. Clona este repositorio en tu máquina local:
+
+npx prisma generate: sirve para generar los modelos en base de datos
+npx prisma migrate dev: genera los schemas en la DB
+npx prisma studio: esta es una herramienta para ver los datos de la DB
