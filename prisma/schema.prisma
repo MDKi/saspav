@@ -6,31 +6,9 @@ generator client {
     previewFeatures = ["jsonProtocol"]
 }
 
-// datasource db {
-//     provider = "sqlite"
-//     // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-//     // Further reading:
-//     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-//     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-//     url      = env("DATABASE_URL")
-// }
-
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:admin@127.0.0.1:5432/saspav"
-}
-
-model Example {
-    idCaso Int @id @default(autoincrement())
-    nombre String?
-    apellido String?
-    dni String?
-    fechaNacimiento DateTime?
-    fechaIngreso DateTime
-    observaciones String?
-    genograma String?
-    inicioVigencia DateTime @default(now())
-    finVigencia DateTime @updatedAt
+  url      = env("DATABASE_URL")
 }
 
 // Necessary for Next auth
@@ -102,8 +80,55 @@ model HistoriaVigenciaUsuario {
   idHistoriaVigenciaUsuario Int                   @id @default(autoincrement())
   inicioVigencia           DateTime               @default(now())
   finVigencia              DateTime               @default(now())
-  usuario                  Usuario                @relation(fields: [idUsuarioo], references: [idUsuario])
-  idUsuarioo                Int
+  usuario                  Usuario                @relation(fields: [idUsuario], references: [idUsuario])
+  idUsuario                Int
+}
+
+model HistoriaRolUsuario {
+  idHistoriaRolUsuario     Int                    @id @default(autoincrement())
+  inicioVigencia           DateTime               @default(now())
+  finVigencia              DateTime               @updatedAt
+  usuario                  Usuario                @relation(fields: [usuarioIdUsuario], references: [idUsuario])
+  usuarioIdUsuario         Int
+  rol                      Rol                    @relation(fields: [rolIdRol], references: [idRol])
+  rolIdRol                 Int
+}
+
+model HistoriaPermisoRol {
+  idHistoriaPermisoRol Int     @id @default(autoincrement())
+  inicioVigencia       DateTime @default(now())
+  finVigencia          DateTime @updatedAt
+  permiso              Int[]
+  rol                  Rol      @relation(fields: [idRol], references: [idRol])
+  idRol                Int
+}
+
+model Rol {
+  idRol                    Int                    @id @default(autoincrement())
+  nombreRol                String
+  usuarios                 Usuario[]              // Relacion añadida
+  asignacionesDePermiso    HistoriaPermisoRol[]   // Relacion añadida
+  HistoriaPermisoRol       HistoriaRolUsuario[]   // Relacion añadida
+  
+}
+
+
+model HistoriaProfesion {
+  idHistoriaProfesion      Int                    @id @default(autoincrement())
+  inicioVigencia           DateTime               @default(now())
+  finVigencia              DateTime               @updatedAt
+  usuario                  Usuario                @relation(fields: [usuarioIdUsuario], references: [idUsuario])
+  usuarioIdUsuario         Int
+  profesion                Profesion              @relation(fields: [profesionIdProfesion], references: [idProfesion])
+  profesionIdProfesion     Int
+}
+
+model Profesion {
+  idProfesion              Int                    @id @default(autoincrement())
+  nombreProfesion          String
+  historiasProfesion       HistoriaProfesion[]    // Relacion añadida
+  inicioVigencia           DateTime               @default(now())
+  finVigencia              DateTime               @updatedAt
 }
 
 // model Horario {
@@ -229,53 +254,6 @@ model HistoriaVigenciaUsuario {
 //   caso                     Caso                   @relation(fields: [casoIdCaso], references: [idCaso])
 //   casoIdCaso               Int
 // }
-
-model HistoriaRolUsuario {
-  idHistoriaRolUsuario     Int                    @id @default(autoincrement())
-  inicioVigencia           DateTime               @default(now())
-  finVigencia              DateTime               @updatedAt
-  usuario                  Usuario                @relation(fields: [usuarioIdUsuario], references: [idUsuario])
-  usuarioIdUsuario         Int
-  rol                      Rol                    @relation(fields: [rolIdRol], references: [idRol])
-  rolIdRol                 Int
-}
-
-model HistoriaPermisoRol {
-  idHistoriaPermisoRol Int     @id @default(autoincrement())
-  inicioVigencia       DateTime @default(now())
-  finVigencia          DateTime @updatedAt
-  permiso              Int[]
-  rol                  Rol      @relation(fields: [idRol], references: [idRol])
-  idRol                Int
-}
-
-model Rol {
-  idRol                    Int                    @id @default(autoincrement())
-  nombreRol                String
-  usuarios                 Usuario[]              // Relacion añadida
-  asignacionesDePermiso    HistoriaPermisoRol[]   // Relacion añadida
-  HistoriaPermisoRol       HistoriaRolUsuario[]   // Relacion añadida
-  
-}
-
-
-model HistoriaProfesion {
-  idHistoriaProfesion      Int                    @id @default(autoincrement())
-  inicioVigencia           DateTime               @default(now())
-  finVigencia              DateTime               @updatedAt
-  usuario                  Usuario                @relation(fields: [usuarioIdUsuario], references: [idUsuario])
-  usuarioIdUsuario         Int
-  profesion                Profesion              @relation(fields: [profesionIdProfesion], references: [idProfesion])
-  profesionIdProfesion     Int
-}
-
-model Profesion {
-  idProfesion              Int                    @id @default(autoincrement())
-  nombreProfesion          String
-  historiasProfesion       HistoriaProfesion[]    // Relacion añadida
-  inicioVigencia           DateTime               @default(now())
-  finVigencia              DateTime               @updatedAt
-}
 
 // model Conviviente {
 //   idConviviente            Int                    @id @default(autoincrement())
