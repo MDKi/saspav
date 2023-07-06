@@ -48,7 +48,7 @@ Asegúrate de tener instalado lo siguiente en tu máquina:
 - docker run --name postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres
 
 - docker pull dpage/pgadmin4
-- docker run --name <nombre_contenedor> -p <puerto_local>:80 -e 'PGADMIN_DEFAULT_EMAIL=user@domain.com' -e 'PGADMIN_DEFAULT_PASSWORD=password' -d dpage/pgadmin4
+- docker run --name pgAdmin4 -p 80:80 -e 'PGADMIN_DEFAULT_EMAIL=user@domain.com' -e 'PGADMIN_DEFAULT_PASSWORD=password' -d dpage/pgadmin4
 
 - Luego de tener postgres y pgadmin4 se deben inicializar los contenedores y entrar a pgadmin4 con las credenciales seteadas
 - Una vez dentro crear una nueva db con el nombre saspav
@@ -89,6 +89,10 @@ Sigue los pasos a continuación para inicializar el proyecto:
     DATABASE_URL=postgresql://postgres:admin@127.0.0.1:5432/saspav
 
 5. Inicializar el schema y realizar migraciones para la base de datos
+`npx prisma db push` genera ek cliente de prisma para sincronizar con la DB
 `npx prisma generate` sirve para generar los modelos en base de datos
 `npx prisma migrate dev` genera los schemas en la DB
 `npx prisma studio` esta es una herramienta para ver los datos de la DB
+
+6. Levantar el proyecto
+`npm run dev`

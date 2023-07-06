@@ -66,6 +66,7 @@ model Usuario {
   direccion                String?
   fechaNacimiento          DateTime?
   fechaCreacion            DateTime               @default(now())
+  fechaModificacion        DateTime               @updatedAt()
   roles                    Rol[]                  // Relacion añadida
   historialVigencia         HistoriaVigenciaUsuario[]
   // tipoIdentificacion       TipoIdentificacion?     @relation(fields: [idTipoIdentificacion], references: [idTipoIdentificacion])
@@ -82,6 +83,7 @@ model HistoriaVigenciaUsuario {
   finVigencia              DateTime               @default(now())
   usuario                  Usuario                @relation(fields: [idUsuario], references: [idUsuario])
   idUsuario                Int
+  fechaModificacion        DateTime               @updatedAt()
 }
 
 model HistoriaRolUsuario {
@@ -92,12 +94,14 @@ model HistoriaRolUsuario {
   usuarioIdUsuario         Int
   rol                      Rol                    @relation(fields: [rolIdRol], references: [idRol])
   rolIdRol                 Int
+  fechaModificacion        DateTime               @updatedAt()
 }
 
 model HistoriaPermisoRol {
-  idHistoriaPermisoRol Int     @id @default(autoincrement())
+  idHistoriaPermisoRol Int      @id @default(autoincrement())
   inicioVigencia       DateTime @default(now())
   finVigencia          DateTime @updatedAt
+  fechaModificacion    DateTime @updatedAt()
   permiso              Int[]
   rol                  Rol      @relation(fields: [idRol], references: [idRol])
   idRol                Int

@@ -1,0 +1,16 @@
+@startuml
+scale 800x600
+
+[*] --> Pendiente
+Pendiente --> Asignado
+Asignado --> EnProgreso
+EnProgreso --> Completado
+Completado --> [*]
+Asignado --> Cancelado
+EnProgreso --> Cancelado
+Cancelado --> [*]
+Asignado --> Ausente
+EnProgreso --> Ausente
+Ausente --> [*]
+
+@enduml
