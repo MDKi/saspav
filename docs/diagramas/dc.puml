@@ -29,11 +29,12 @@ entity Usuario {
   nombre: String
   apellido: String
   teléfono: String?
-  salt: String @unique
   hashSaltContraseña: String
+  salt: String @unique # se agrega esto para el hasing de la password
   vencimientoContraseña: Date
-  tokenReestablecerContraseña: String?
-  vencimientoToken: DateTime
+  resetToken: String? # token jwt para generar o reestablecer la password
+  vencimientoResetToken: DateTime # deffault 24hs
+
   .. Relaciones ..
   historialVigencia: HistorialVigenciaUsuario
   tipoIdentificación: TipoIdentificación
@@ -51,7 +52,7 @@ entity HistoriaVigenciaUsuario {
   idHistoriaUsuario: Int @id @default(autoincrement())
   inicioVigencia: DateTime @default(now())
   finVigencia: DateTime @updatedAt
-  motivo: String
+  motivo: String 
   .. Relaciones ..
   .. Relaciones inversas ..
   usuario: Usuario
