@@ -90,6 +90,7 @@ Sigue los pasos a continuación para inicializar el proyecto:
 
 5. Inicializar el schema y realizar migraciones para la base de datos
 `npx prisma db push` genera ek cliente de prisma para sincronizar con la DB
+`npx prisma format` genera los campos de las relaciones faltantes en los modelos
 `npx prisma generate` sirve para generar los modelos en base de datos
 `npx prisma migrate dev` genera los schemas en la DB
 `npx prisma studio` esta es una herramienta para ver los datos de la DB

@@ -23,8 +23,8 @@ skinparam monochrome true
 
 entity Usuario {
   idUsuario: Int @id @default(autoincrement())
-' identificación: String @unique $identificación
-  legajo: Number @unique (autoincrement())
+  identificación: String @unique $
+  DNI: Int
   email: String @unique
   nombre: String
   apellido: String
@@ -583,6 +583,6 @@ Permiso .. NotaPermisos2
 ' remove $permisos
 
 ' Esconder Identificación
-remove $identificación
+' remove $identificación
 
 @enduml
