@@ -8,13 +8,22 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Link from "next/link";
 import { useState } from 'react';
+import { api } from "~/utils/api";
 
 export default function LoginForm (){
   const [error, setError] = useState(false);
+  const {mutate } = api.user.saveUser.useMutation({
+    onError: (error) => {
+      console.log('Error ', error)
+    },
+    onSuccess: () => {
+      console.log('Mutacion confirmada')
+    }
+  });
+  
 
   const verifyLogin = () => {
     console.log('Verificando el login... ');
-
     /*
       TODO: LLAMAR A LA API Y BUSCAR EL USUARIO
         
@@ -22,8 +31,19 @@ export default function LoginForm (){
         - Si no existe el user usar el setError para que se vea en rojo que no esta
         - Usuario o contraseña incorrectas
     */
-    
-    setError(true);
+    const usuarioFront = {
+      nombre: 'Nombre',
+      apellido: 'Apellido',
+      dni: '40558643',
+      email: 'fjgallardo97@gmail.com',
+      telefono: '2616398739',
+      direccion: 'Av San Martín sur 487',
+      fechaNacimiento: new Date("1997-07-05"),
+      fechaCreacion: new Date(),
+      fechaModificacion: new Date(),
+    }
+    mutate(usuarioFront);
+    // setError(true);
 } 
   
   return (

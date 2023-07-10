@@ -5,10 +5,11 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { api } from "~/utils/api";
 import  Login  from "./login/Login";
+// import { trpc } from '../utils/api'
 
 export default function Home() {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  console.log('Esto es el hello >>> ', hello)
+  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  // console.log('Esto es el hello >>> ', hello)
   return (
     <>
       <Head>
