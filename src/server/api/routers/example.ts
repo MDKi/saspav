@@ -1,9 +1,5 @@
 import { z } from "zod";
-import {
-  createTRPCRouter,
-  publicProcedure,
-  protectedProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const exampleRouter = createTRPCRouter({
   hello: publicProcedure
@@ -13,15 +9,18 @@ export const exampleRouter = createTRPCRouter({
         greeting: `Hello ${input.text}`,
       };
     }),
-
-  // getAll: publicProcedure.query(({ ctx }) => {
-  //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  //   return ctx.prisma.example.findMany();
-  // }),
-
-  getSecretMessage: protectedProcedure.query(() => {
-    return "you can now see this secret message!";
-  }),
-
-
+    getAll: publicProcedure.query(({ ctx }) => {
+      ctx.prisma.example.findMany();
+      return true;
+    }),
+  save: publicProcedure.input(z.object({ name: z.string() })).mutation(({ctx,input}) => {
+    console.log('estoy mutando loco');
+    console.log('Este es el input kpo >>',input);
+    const user = ctx.prisma.example.create({
+      data:{
+        ...input
+      }
+    });
+    return {...user};
+  })
 });

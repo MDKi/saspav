@@ -97,3 +97,31 @@ Sigue los pasos a continuación para inicializar el proyecto:
 
 6. Levantar el proyecto
 `npm run dev`
+
+
+
+
+# ###################
+superbase es una copia similar a firestore
+superbase ::> usa postgres de fondo 
+
+Comandos para el proyecto
+
+
+
+npx supabase init
+
+# Adjuntar token
+
+npx supabase login
+
+npx supabase link --project-ref ljahkxwvqlnttxkrgimi
+
+npx supabase migration new new-migration
+npx supabase db push
+
+
+En el .env colocar la url de la DB
+DATABASE_URL="postgres://postgres:*NGVK-74xBNJtJ9@db.ljahkxwvqlnttxkrgimi.supabase.co:6543/postgres"
+#TOKEN
+sbp_345b534d6e3de2e1299ea1d93fff20736e8ff2d8
