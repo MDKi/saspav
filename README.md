@@ -92,7 +92,7 @@ Sigue los pasos a continuación para inicializar el proyecto:
 `npx prisma db push` genera el cliente de prisma para sincronizar con la DB
 `npx prisma format` genera los campos de las relaciones faltantes en los modelos
 `npx prisma generate` sirve para generar los modelos en base de datos
-`npx prisma migrate dev` genera los schemas en la DB
+`npx prisma migrate dev` genera los schemas en la DB (este sincroniza con superbase)
 `npx prisma studio` esta es una herramienta para ver los datos de la DB
 
 6. Levantar el proyecto
@@ -117,7 +117,7 @@ npx supabase login
 
 npx supabase link --project-ref ljahkxwvqlnttxkrgimi
 
-npx supabase migration new new-migration
+npx supabase migration new new-migration (al parecer este no sirve)
 npx supabase db push
 
 

@@ -6,7 +6,7 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -32,11 +32,13 @@ type CreateContextOptions = Record<string, never>;
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = (_opts: CreateContextOptions) => {
-  return {
-    prisma,
-  };
-};
+
+// TODO: ESTO SE VA
+// const createInnerTRPCContext = (_opts: CreateContextOptions) => {
+//   return {
+//     prisma,
+//   };
+// };
 
 /**
  * This is the actual context you will use in your router. It will be used to process every request
@@ -45,7 +47,14 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+  const {req,res} = _opts
+  // return createInnerTRPCContext({});
+  return {
+    req,
+    res,
+    prisma,
+
+  }
 };
 
 /**
@@ -70,6 +79,23 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   },
 });
 
+const isAuthed = t.middleware(({ctx,next}) => {
+  const {req, res,prisma} = ctx
+  //TODO LÓGICA PARA JWT
+
+  const token = req.headers.authorization?.split(' ')[1];
+
+
+  if(!token) throw new TRPCError({code:'UNAUTHORIZED'})
+
+  return next({
+    ctx: {
+      userId: 1
+    },
+
+  });
+}) 
+
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
  *
@@ -83,7 +109,6 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  * @see https://trpc.io/docs/router
  */
 export const createTRPCRouter = t.router;
-
 /**
  * Public (unauthenticated) procedure
  *
@@ -92,3 +117,4 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+export const privateProcedure = t.procedure.use(isAuthed);

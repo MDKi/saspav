@@ -1,4 +1,3 @@
-import { error } from "console";
 import styles from "./index.module.css";
 import Head from "next/head";
 import Link from "next/link";
@@ -6,7 +5,7 @@ import { api } from "~/utils/api";
 
 export default function Home() {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const {mutate } = api.example.save.useMutation({
+  const {mutate} = api.example.save.useMutation({
     onError: (error) => {
       console.log('tengo error :( ',error);
     },
@@ -17,8 +16,8 @@ export default function Home() {
 
   const submit =  () => {
     console.log('Estoy mandando data')
-    const rta = mutate({name:'Frank Hard Link'})
-    console.log('esta es la rta >>> ',rta )
+    // const rta = mutate({name:'Frank Hard Link'})
+    // console.log('esta es la rta >>> ',rta )
   };
 
   return (
@@ -50,6 +49,7 @@ export default function Home() {
               href="https://create.t3.gg/en/introduction"
               target="_blank"
             >
+              
               <h3 className={styles.cardTitle}>Documentation →</h3>
               <div className={styles.cardText}>
                 Learn more about Create T3 App, the libraries it uses, and how
