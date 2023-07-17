@@ -6,9 +6,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { api } from "~/utils/api";
-import Link from 'next/link';
 
-
+// TODO: PASAR A LA CARPETA DE INTERFACES
 export interface FormData {
   nombre: string;
   apellido: string;
@@ -33,11 +32,11 @@ function Login() {
   });
 
 
-  const {mutate} = api.example.save.useMutation({
+  const {mutate} = api.example.save2.useMutation({
     onError: (error) => {
       console.log('tengo error :( ',error);
     },
-    onSuccess: () => {
+    onSuccess: ({}) => {
       console.log('Mutacion confirmada loko')
     }
   })

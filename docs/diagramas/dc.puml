@@ -41,6 +41,7 @@ entity Usuario {
   asignacionesDeRol: HistoriaRolUsuario[]
   horarios: Horario[]
   asignacionesDeProfesión: HistoriaProfesión[]
+  HistorialSession: HistorialSessionUsuario[]
   .. Relaciones inversas ..
   avancesCaso: AvanceCaso[]
   casosCreados: Caso[]
@@ -53,6 +54,17 @@ entity HistoriaVigenciaUsuario {
   inicioVigencia: DateTime @default(now())
   finVigencia: DateTime @updatedAt
   motivo: String 
+  .. Relaciones ..
+  .. Relaciones inversas ..
+  usuario: Usuario
+  .. Claves foráneas ..
+  idUsuario
+}
+entity HistorialSessionUsuario{
+  idHistoriaSesion: Int @id @default(autoincrement())
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+  sessionToken:  String   @unique
   .. Relaciones ..
   .. Relaciones inversas ..
   usuario: Usuario
@@ -528,6 +540,7 @@ class _CasoToDerechoVulnerado << (T, 00000000) >> {
 
 Usuario "1" *--> "0..*" Horario: "horarios"
 Usuario "1" *--> "1..*" HistoriaVigenciaUsuario: "historialVigencia"
+Usuario "1" *--> "0..*" HistorialSessionUsuario: "historialSesion"
 Usuario "0..*" x--> "1" TipoIdentificación: "tipoIdentificación"
 Caso "0..*" --> "1" Usuario: "creadoPor"
 Caso "1" *--> "0..*" CasoAsignado: "asignacionesUsuario"

@@ -30,13 +30,15 @@ datasource db {
 //   @@unique([provider, providerAccountId])
 // }
 
-// model Session {
-//   id           String   @id @default(cuid())
-//   sessionToken String   @unique
-//   userId       String
-//   expires      DateTime
-//   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-// }
+model HistoriaSessionUsuario {
+  id            Int      @id @default(autoincrement())
+  sessionToken  String   @unique
+  userId        Int
+  // expires      DateTime
+  user          Usuario  @relation(fields: [userId], references: [idUsuario])
+  fechaCreacion DateTime @default(now())
+  finVigencia   DateTime @default(now())
+}
 
 // model User {
 //   id            String    @id @default(cuid())
@@ -44,7 +46,7 @@ datasource db {
 //   email         String?   @unique
 //   emailVerified DateTime?
 //   image         String?
-//   accounts      Account[]
+//   // accounts      Account[]
 //   sessions      Session[]
 // }
 
@@ -57,16 +59,21 @@ datasource db {
 // }
 
 model Usuario {
-  idUsuario         Int      @id @default(autoincrement())
-  nombre            String
-  apellido          String
-  dni               String
-  email             String
-  telefono          String?
-  direccion         String?
-  fechaNacimiento   String?
-  fechaCreacion     DateTime @default(now())
-  fechaModificacion DateTime @updatedAt()
+  idUsuario          Int                      @id @default(autoincrement())
+  nombre             String
+  apellido           String
+  dni                String
+  email              String                   @unique
+  telefono           String?
+  direccion          String?
+  fechaNacimiento    String?
+  fechaCreacion      DateTime                 @default(now())
+  fechaModificacion  DateTime                 @updatedAt()
+  hashSaltPassword   String?
+  salt               String? //Por ahora vamos a usar el ID como salt
+  passwordExpiration DateTime?
+  resetToken         String?
+  sessions           HistoriaSessionUsuario[]
   // roles                   Rol[] // Relacion añadida
   // historialVigencia       HistoriaVigenciaUsuario[]
   // tipoIdentificacion       TipoIdentificacion?     @relation(fields: [idTipoIdentificacion], references: [idTipoIdentificacion])
@@ -100,7 +107,7 @@ model Usuario {
 // model HistoriaPermisoRol {
 //   idHistoriaPermisoRol Int      @id @default(autoincrement())
 //   inicioVigencia       DateTime @default(now())
-//   finVigencia          DateTime @updatedAt
+//   finVigencia          DateTime 
 //   fechaModificacion    DateTime @updatedAt()
 //   permiso              Int[]
 //   rol                  Rol      @relation(fields: [idRol], references: [idRol])

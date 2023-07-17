@@ -25,12 +25,13 @@ export const exampleRouter = createTRPCRouter({
   }),
   save2: privateProcedure.input(newUserSchema).mutation(({ctx,input}) => {
     console.log('este es el input que llego >>> ',input);
-
-    const user = ctx.prisma.usuario.create({
-      data:{
-        ...input
-      }
-    });
-    return user;
+    console.log('este es el ctx >> ',ctx)
+    // const user = ctx.prisma.usuario.create({
+    //   data:{
+    //     ...input
+    //   }
+    // });
+    // return user;
+    return {user:'hola'};
   })
 });

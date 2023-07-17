@@ -81,16 +81,17 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 
 const isAuthed = t.middleware(({ctx,next}) => {
   const {req, res,prisma} = ctx
-  //TODO LÓGICA PARA JWT
-
+  console.log('este es el token: ',req.headers.authorization);
   const token = req.headers.authorization?.split(' ')[1];
-
-
+  console.log('acá debería tener el token kpo :)')
+  
   if(!token) throw new TRPCError({code:'UNAUTHORIZED'})
-
+  //TODO LÓGICA PARA JWT
+  // TODO: Decodificar el token y enviar el payload del mismo
   return next({
     ctx: {
-      userId: 1
+      userId: 1,
+      payload:'Acá mando el payload',
     },
 
   });
