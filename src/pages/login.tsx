@@ -1,3 +1,4 @@
+import styles from "./index.module.css";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
@@ -7,10 +8,26 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { api } from "~/utils/api";
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import type { LoginFormData } from './interfaces/login'
 
 
 function Login() {
   const [redirectToMain, setRedirectToMain] = useState(false);
+
+  const [loginFormData, setLoginFormData] = useState<LoginFormData>({  
+    email: '',
+    password:'',
+  });
+
+  const handleChange = (event: { target: { name: string; value: string; }; }) => {
+    const { name, value } = event.target;
+    console.log('formData >>> ',{ name, value })
+    setLoginFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+
+  };
 
   const {mutate} = api.users.login.useMutation(({
     onError: (error) => {
@@ -19,6 +36,7 @@ function Login() {
     },
     onSuccess: (data) => {
       console.log('login realizado con exito :) ',data);
+      localStorage.setItem('accessToken', data.sessionToken);
       setRedirectToMain(true);
 
     }
@@ -34,7 +52,9 @@ function Login() {
   const login = () => {
     console.log('estamos iniciando la session :)');
     // TODO: SACAR ESTO Y UTILIZAR EL FORM
-    mutate({email:'fjgallardo97@gmail.com',password:'123456'})
+    mutate(loginFormData);
+
+
     console.log('loggea3 >>> ')
   } 
 
@@ -48,13 +68,13 @@ function Login() {
         <Form>
         <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Dirección de Email</Form.Label>
-            <Form.Control type="email" placeholder="Ingrese su email" />
+            <Form.Control type="email" placeholder="Ingrese su email" name='email' value={loginFormData.email} onChange={handleChange}/>
 
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="formBasicPassword">
             <Form.Label>Password</Form.Label>
-            <Form.Control type="password" placeholder="Password" />
+            <Form.Control type="password" placeholder="Password" name='password' value={loginFormData.password} onChange={handleChange}/>
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicCheckbox">
           <Form.Text className="text-muted">
@@ -71,14 +91,6 @@ function Login() {
         <Col></Col>
       </Row>
     </Container>
-
-
-
-
-
-
-
-
     </>
   );
 }

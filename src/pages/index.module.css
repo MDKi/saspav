@@ -147,3 +147,88 @@
 .loginButton:hover {
   background-color: rgb(255 255 255 / 0.2);
 }
+
+/* .sidebar {
+  width: 200px;
+  height: 100vh;
+  background-color: #e0e7ee;
+  padding: 20px;
+} */
+
+.sidebar .listItem {
+  width: 200px;
+  margin-top: auto;
+  margin-bottom: 0px;
+}
+
+.sidebar .listItem:hover {
+  width: 200px;
+  background-color: #2a4ef3;
+}
+
+/* TODO */
+.sidebar {
+  width: 211px;
+  height: 100vh;
+  position: relative;
+  background-color: white;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+  margin-right: 20px
+}
+
+.sidebarItem {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding-left: 24px;
+  color: #458FF6;
+  font-size: 16px;
+  font-family: 'Open Sans';
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.10px;
+  cursor: pointer;
+}
+
+.sidebarItem:hover {
+  background-color: #f8f9fa;
+}
+
+.iconLine {
+  width: 5px;
+  height: 2px;
+  background: #458FF6;
+  margin-bottom: 4px;
+}
+
+.iconSquare {
+  width: 17.5px;
+  height: 17.5px;
+  background: #458FF6;
+}
+
+.sidebarItemText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40.58px;
+  padding: 8px;
+  margin-bottom: 50px;
+}
+
+.logoText {
+  color: #458FF6;
+  font-size: 15.46px;
+  font-family: 'Open Sans';
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

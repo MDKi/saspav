@@ -13,8 +13,8 @@ export const exampleRouter = createTRPCRouter({
     //   ctx.prisma.example.findMany();
     //   return true;
     // }),
-  save: publicProcedure.input(newUserSchema).mutation(({ctx,input}) => {
-    console.log('este es el input que llego >>> ',input)
+  save: privateProcedure.input(newUserSchema).mutation(({ctx,input}) => {
+    console.log('este es el input que llego al privateProcedure >>> ',input)
 
     const user = ctx.prisma.usuario.create({
       data:{

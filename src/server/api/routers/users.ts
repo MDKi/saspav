@@ -68,17 +68,17 @@ export const usersRouter = createTRPCRouter({
 //     console.log('este es el input que llego para el loguot >>> ',input)
 
 //   }),
-//   newUser: privateProcedure.input(newUserSchema).mutation(({ctx,input}) => {
-//     console.log('este es el input que llego para el newUser >>> ',input);
-//     console.log('este es el ctx >> ',ctx)
-//     // const user = ctx.prisma.usuario.create({
-//     //   data:{
-//     //     ...input
-//     //   }
-//     // });
-//     // return user;
-//     return {user:'hola'};
-//   }),
+  newUser: privateProcedure.input(newUserSchema).mutation(async ({ctx,input}) => {
+    console.log('este es el input que llego para el newUser >>> ',input);
+    console.log('este es el ctx >> ',ctx)
+    const user = await ctx.prisma.usuario.create({
+      data:{
+        ...input
+      }
+    });
+    return user;
+    // return {user:'hola'};
+  }),
 
 
 });

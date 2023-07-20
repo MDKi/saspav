@@ -1,27 +1,29 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { api } from "~/utils/api";
-
-// TODO: PASAR A LA CARPETA DE INTERFACES
-export interface FormData {
-  nombre: string;
-  apellido: string;
-  dni: string;
-  telefono: string;
-  email: string;
-  direccion: string;
-  fechaNacimiento: string;
-}
+import { api,setToken } from "~/utils/api";
+import type { RegisterFormData } from './interfaces/register'
 
 
 function Login() {
+  const [, setAccessToken] = useState('');
 
-  const [formData, setFormData] = useState<FormData>({  
+  useEffect(() => {
+    const storedAccessToken = localStorage.getItem('accessToken');
+    if (storedAccessToken) {
+      setAccessToken(storedAccessToken);
+      setToken(storedAccessToken);
+    } else {
+      // Realiza la redirección a la página de inicio de sesión
+      window.location.href = '/login';
+    }
+  }, []);
+
+  const [formData, setFormData] = useState<RegisterFormData>({  
     nombre: '',
     apellido: '',
     dni:'',
@@ -32,7 +34,7 @@ function Login() {
   });
 
 
-  const {mutate} = api.example.save2.useMutation({
+  const {mutate} = api.example.save.useMutation({
     onError: (error) => {
       console.log('tengo error :( ',error);
     },
@@ -58,6 +60,7 @@ function Login() {
 
     console.log('estamos registrando a una persona :)');
     console.log('este es el fordata >> ',formData)
+    //TODO:
     const response  = mutate(formData);
   } 
 

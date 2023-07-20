@@ -82,7 +82,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 const isAuthed = t.middleware(({ctx,next}) => {
   const {req, res,prisma} = ctx
   console.log('este es el token: ',req.headers.authorization);
-  const token = req.headers.authorization?.split(' ')[1];
+  const token = req.headers.authorization;
   console.log('acá debería tener el token kpo :)')
   
   if(!token) throw new TRPCError({code:'UNAUTHORIZED'})
@@ -91,7 +91,7 @@ const isAuthed = t.middleware(({ctx,next}) => {
   return next({
     ctx: {
       userId: 1,
-      payload:'Acá mando el payload',
+      payload:'Acá mando el payload del token decodifica2',
     },
 
   });
