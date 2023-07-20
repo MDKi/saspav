@@ -1,16 +1,39 @@
 @startuml
-scale 800x600
 
-[*] --> Pendiente
-Pendiente --> Asignado
-Asignado --> EnProgreso
-EnProgreso --> Completado
-Completado --> [*]
-Asignado --> Cancelado
-EnProgreso --> Cancelado
-Cancelado --> [*]
-Asignado --> Ausente
-EnProgreso --> Ausente
-Ausente --> [*]
+state Asignable {
+  state Nuevo
+  state Generado
+  state Reprogramado
+}
+
+state NoAsignable {
+  state Asignado
+  state BajaCaso
+  state BajaProfesional
+  state ProfesionalDesasignado
+}
+
+state Atendido
+state ProfesionalNoAsistió
+state CasoNoAtendido
+
+[*] --> Nuevo
+[*] --> Generado
+Asignable --> NoAsignable
+Asignado --> Reprogramado
+
+Asignado --> BajaCaso
+Asignado --> BajaProfesional
+Asignado --> ProfesionalDesasignado
+Asignado --> Atendido
+Asignado --> ProfesionalNoAsistió
+Asignado --> CasoNoAtendido
+
+BajaCaso --> [*]
+BajaProfesional --> [*]
+ProfesionalDesasignado --> [*]
+Atendido --> [*]
+ProfesionalNoAsistió --> [*]
+CasoNoAtendido --> [*]
 
 @enduml
