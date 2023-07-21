@@ -1,4 +1,4 @@
-@startuml
+@startuml "DTE Turno"
 
 state Asignable {
   state Nuevo
