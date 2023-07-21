@@ -23,21 +23,20 @@ skinparam monochrome true
 
 entity Usuario {
   idUsuario: Int @id @default(autoincrement())
-  identificación: String @unique $
-  DNI: Int
+  identificación: String @unique
   email: String @unique
   nombre: String
   apellido: String
   teléfono: String?
   hashSaltContraseña: String
-  salt: String @unique # se agrega esto para el hasing de la password
+  salt: String @unique // se agrega esto para el hashing de la password
   vencimientoContraseña: Date
-  resetToken: String? # token jwt para generar o reestablecer la password
-  vencimientoResetToken: DateTime # deffault 24hs
-
+  resetToken: String? // token jwt para generar o restablecer la password
+  vencimientoResetToken: DateTime // default 24hs
   .. Relaciones ..
-  historialVigencia: HistorialVigenciaUsuario
+  ' TODO: Revisar 👇🏼
   tipoIdentificación: TipoIdentificación
+  historialVigencia: HistorialVigenciaUsuario[]
   asignacionesDeRol: HistoriaRolUsuario[]
   horarios: Horario[]
   asignacionesDeProfesión: HistoriaProfesión[]
@@ -48,6 +47,8 @@ entity Usuario {
   casosAsignados: CasoAsignado[]
   turnos: Turno[]
   .. Claves foráneas ..
+  ' TODO: Revisar 👇🏼
+  idTipoIdentificación
 }
 entity HistoriaVigenciaUsuario {
   idHistoriaUsuario: Int @id @default(autoincrement())
@@ -72,37 +73,69 @@ entity HistorialSessionUsuario{
   idUsuario
 }
 entity TipoIdentificación << Tipificador >> $identificación {
-  idTipoIdentificación
-  nombreIdentificación
+  idTipoIdentificación: Int @id @default(autoincrement())
+  nombreIdentificación: String
   .. Relaciones ..
+  historialVigencia: HistoriaVigenciaTipoIdentificación[]
   .. Relaciones inversas ..
   : Usuario[] // Explícitamente omitida
   .. Claves foráneas ..
+}
+entity HistoriaVigenciaTipoIdentificación << Historiador >> {
+  idHistoriaVigenciaTipoIdentificación: Int @id @default(autoincrement())
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+  .. Relaciones ..
+  .. Relaciones inversas ..
+  tipoIdentificación: TipoIdentificación
+  .. Claves foráneas ..
+  idTipoIdentificación
 }
 entity HistoriaEstadoTurno << Historiador >> {
   idHistoriaEstadoTurno: Int @id @default(autoincrement())
   inicioVigencia: DateTime @default(now())
   finVigencia: DateTime @updatedAt
-  estadoTurno: EstadoTurno
   motivoTurno: String?
   .. Relaciones ..
   caso: Caso?
+  usuario: Usuario
+  motivo: Motivo
   .. Relaciones inversas ..
   turno: Turno
   .. Claves foráneas ..
+  idUsuario
   idTurno
   idCaso?
+  idMotivo
 }
 entity Turno {
   idTurno: Int @id @default(autoincrement())
   inicioTurno: DateTime
   finTurno: DateTime
   .. Relaciones ..
-  usuario: Usuario
   estados: HistoriaEstadoTurno[]
   .. Relaciones inversas ..
   .. Claves foráneas ..
-  idUsuario
+}
+entity Motivo << Tipificador >> {
+  idMotivo: Int @id @default(autoincrement())
+  esMotivoDelSistema: Boolean
+  .. Relaciones ..
+  nomencladorMotivo: NomencladorMotivo[]
+  .. Relaciones inversas ..
+  : HistoriaEstadoTurno[] // Explícitamente omitida
+  .. Claves foráneas ..
+}
+entity NomencladorMotivo << Historiador >> {
+  idNomencladorMotivo: Int @id @default(autoincrement())
+  inicioVigencia: DateTime @default(now())
+  finVigencia: DateTime @updatedAt
+  nombreMotivo: String
+  .. Relaciones ..
+  .. Relaciones inversas ..
+  motivo: Motivo
+  .. Claves foráneas ..
+  idMotivo
 }
 entity Horario {
   idHorario: Int @id @default(autoincrement())
@@ -166,7 +199,6 @@ entity Caso {
   genograma: Image?
   inicioVigencia: DateTime @default(now())
   finVigencia: DateTime @updatedAt
-
   .. Relaciones ..
   creadoPor: Usuario
   avances: AvanceCaso[]
@@ -386,12 +418,6 @@ enum Permiso << (e, 00000000) >> $enum $permisos {
   <b>ELIMINAR_HORARIO_IMPERSONAR</b>
   <b>MODIFICAR_TIPIFICADORES</b>
 }
-enum EstadoTurno << (e, 00000000) >> $enum {
-  DISPONIBLE
-  RESERVADO
-  VENCIDO_ASISTIDO
-  VENCIDO_NO_ASISTIDO
-}
 enum UnidadMedida << (e, 00000000) >> $enum {
   UNIDAD
   GRAMO
@@ -411,7 +437,25 @@ enum Día << (e, 00000000) >> $enum {
 ' -----------------------------------------------------------------------------
 ' | NOTAS (Instancias tipificadores)                                          |
 ' -----------------------------------------------------------------------------
-
+note as InstanciasMotivo
+Nuevo,
+Generado,
+Reprogramado,
+Asignado,
+BajaCaso,
+BajaProfesional,
+ProfesionalDesasignado,
+Atendido,
+ProfesionalNoAsistió,
+CasoNoAtendido
+end note
+note as InstanciasTipoIdentificación
+DNI,
+CUIL,
+CUIT,
+Legajo,
+...
+end note
 note as InstanciasTipoRecurso
 Arroz,
 Silla de ruedas,
@@ -476,13 +520,17 @@ con la precaución de agregar a los atributos idEspecialdad e idUsuario:
 En nuestro caso, como no vamos a usar MySQL, definimos una clave primaria
 única para cada entidad.
 end note
-note as NotaTODODTE $enum
-Hacer DTE
-end note
 note as NotaPermisos $permisos $enum
 Los permisos en <b>negrita</b> están pensados solo para el administrador.
 TODO: Permisos de recursos, donaciones y donantes.
 TODO: Completar si aparecen más con las US ...
+end note
+remove NotaIDCompuesto
+note as NotaDiaSemana
+Tal como retorna [[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getDay getDay]].
+Para obtenerlo localizado:
+""Intl.DateTimeFormat(locale, { weekday: "long" }).format(fecha)""
+Por ejemplo, con ""locale = "en-US""" y ""fecha"" correspondiente a un día domingo, retorna """Sunday""".
 end note
 note as NotaPermisos2 $permisos $enum
 Tabla de permisos
@@ -546,7 +594,7 @@ Caso "0..*" --> "1" Usuario: "creadoPor"
 Caso "1" *--> "0..*" CasoAsignado: "asignacionesUsuario"
 CasoAsignado "0..*" --> "1" Usuario: "usuarioAsignado"
 Turno "1" *--> "1..*" HistoriaEstadoTurno: "estados"
-Turno "0..*" --> "1" Usuario: "usuario"
+HistoriaEstadoTurno "0..*" --> "1" Usuario: "usuario"
 HistoriaEstadoTurno "0..*" --> "0..1" Caso: "caso"
 Recurso "0..*" --> "1" TipoRecurso: "tipoRecurso"
 Usuario "1" *--> "0..*" HistoriaRolUsuario: "asignacionesDeRol"
@@ -566,13 +614,18 @@ Caso "1" *--> "0..*" AvanceCaso: "avances"
 AvanceCaso "0..*" --> "1" Usuario: "registradoPor"
 Caso "1..*" *--> "1..*" HistoriaEstadoCaso: "historialEstados"
 HistoriaEstadoCaso "0..*" --> "1" EstadoCaso: "estado"
+HistoriaEstadoTurno "0..*" x--> "1" Motivo: "motivo"
+Motivo "1" --> "1..*" NomencladorMotivo: nomencladorMotivo
+TipoIdentificación "1" --> "1..*" HistoriaVigenciaTipoIdentificación: historialVigencia
+
 EstadoCaso --> "0..*" EstadoCaso: "sucesores"
 
-HistoriaEstadoTurno ..> EstadoTurno
 HistoriaPermisoRol ..> Permiso
 Horario ..> Día
 TipoRecurso ..> UnidadMedida
 
+Motivo .. InstanciasMotivo
+TipoIdentificación .. InstanciasTipoIdentificación
 TipoRecurso .. InstanciasTipoRecurso
 Escolaridad .. InstanciasEscolaridad
 DerechoVulnerado .. InstanciasDerechoVulnerado
@@ -581,9 +634,9 @@ Vínculo .. InstanciasVínculo
 EstadoCaso .. InstanciasEstadoCaso
 Rol .. InstanciasRol
 HistoriaProfesión .. NotaIDCompuesto
-EstadoTurno .. NotaTODODTE
 Permiso .. NotaPermisos
 Permiso .. NotaPermisos2
+Día .. NotaDiaSemana
 
 
 (Donación, Donante) .. _DonaciónToDonante
