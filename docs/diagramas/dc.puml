@@ -363,10 +363,18 @@ entity TipoRecurso << Tipificador >> {
 ' esConsumible: Boolean
 ' esExpirable: Boolean
   nombreTipoRecurso: String
-  unidadMedida: UnidadMedida
   .. Relaciones ..
+  unidadMedida: UnidadMedida
   .. Relaciones inversas ..
   recursos: Recurso[]
+  .. Claves foráneas ..
+}
+entity UnidadMedida << Tipificador >> {
+  idUnidadMedida: Int @id @default(autoincrement())
+  nombreUnidadMedida: String
+  .. Relaciones ..
+  .. Relaciones inversas ..
+  : TipoRecurso[] // Explícitamente omitida
   .. Claves foráneas ..
 }
 
@@ -405,12 +413,6 @@ enum Permiso << (e, 00000000) >> $enum $permisos {
   ELIMINAR_HORARIO
   <b>ELIMINAR_HORARIO_IMPERSONAR</b>
   <b>MODIFICAR_TIPIFICADORES</b>
-}
-enum UnidadMedida << (e, 00000000) >> $enum {
-  UNIDAD
-  GRAMO
-  LITRO
-  METRO
 }
 enum Día << (e, 00000000) >> $enum {
   DOMINGO
@@ -604,6 +606,7 @@ HistoriaEstadoCaso "0..*" --> "1" EstadoCaso: "estado"
 HistoriaEstadoTurno "0..*" x--> "1" Motivo: "motivo"
 Motivo "1" --> "1..*" NomencladorMotivo: nomencladorMotivo
 TipoIdentificación "1" --> "1..*" HistoriaVigenciaTipoIdentificación: historialVigencia
+TipoRecurso "0..*" x--> "1" UnidadMedida
 
 EstadoCaso --> "0..*" EstadoCaso: "sucesores"
 
